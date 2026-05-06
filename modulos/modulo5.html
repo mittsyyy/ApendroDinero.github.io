@@ -3,12 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Comparación de Valores</title>
-  <link rel="stylesheet" href="../css/modulo2.css">
+  <title>Clasificación por Denominación</title>
+  <link rel="stylesheet" href="../css/modulo5.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
-
-
 </head>
 <body>
 
@@ -23,11 +21,13 @@
     <div class="tree-top"></div>
     <div class="tree-trunk"></div>
   </div>
+
   <div class="tree tree-right">
     <div class="tree-top-2"></div>
     <div class="tree-top"></div>
     <div class="tree-trunk"></div>
   </div>
+
   <div class="tree tree-far-right">
     <div class="tree-top-2"></div>
     <div class="tree-top"></div>
@@ -36,10 +36,12 @@
 
   <!-- Barra superior -->
   <div class="top-bar">
-    <span class="title-label">⚖️ Comparación de Valores</span>
+    <span class="title-label">Clasificación por Denominación</span>
+
     <div class="progress-bar-wrap">
       <div class="progress-bar-fill" id="progressFill"></div>
     </div>
+
     <div id="header-icons" style="display:flex;gap:10px;">
       <button class="icon-btn" id="mute-btn" onclick="toggleMute()">
         <i class="fa-solid fa-volume-high"></i>
@@ -58,28 +60,23 @@
 
   <!-- Contenido principal -->
   <div id="game-wrapper">
-    <div class="compare-card" id="mainCard">
+    <div class="classify-card" id="mainCard">
 
       <div class="q-counter" id="qCounter">Pregunta 1 de 10</div>
-      <div class="question-text" id="questionText">¿Cuál tiene mayor valor?</div>
+      <div class="question-text" id="questionText">¿Cuál es su valor?</div>
 
-      <!-- Área de comparación -->
-      <div class="compare-area" id="compareArea">
-        <div class="money-box" id="boxA">
-          <img id="imgA" src="" alt="Opción A">
-          <div class="money-label" id="labelA">$0</div>
-        </div>
-
-        <div class="vs-circle" id="vsCircle">VS</div>
-
-        <div class="money-box" id="boxB">
-          <img id="imgB" src="" alt="Opción B">
-          <div class="money-label" id="labelB">$0</div>
+      <!-- Dinero a clasificar -->
+      <div class="money-display-area" id="moneyDisplayArea">
+        <div class="money-display-box">
+          <img id="moneyImg" src="" alt="Dinero">
+          <div class="money-display-label" id="moneyDisplayLabel">Moneda o billete</div>
         </div>
       </div>
 
-      <!-- Botones de respuesta -->
-      <div class="options-compare" id="optionsContainer"></div>
+      <!-- Opciones -->
+      <div class="options-classify" id="optionsContainer">
+        <!-- modulo5.js inserta botones -->
+      </div>
 
     </div>
   </div>
@@ -100,20 +97,22 @@
     <div class="modal">
       <button class="modal-close" onclick="closeModal('settings-modal')">✕</button>
       <h2>Ajustes</h2>
+
       <div class="setting-row">
         <span><i class="fa-solid fa-volume-high"></i> Sonido</span>
         <div class="toggle on" id="toggle-sound" onclick="toggleSetting('toggle-sound')"></div>
       </div>
+
       <div class="setting-row">
         <span><i class="fa-solid fa-music"></i> Música</span>
         <div class="toggle on" id="toggle-music" onclick="toggleSetting('toggle-music')"></div>
       </div>
+
       <br>
       <button class="btn-primary" onclick="closeModal('settings-modal')">Listo</button>
     </div>
   </div>
 
- <script src="../js/modulo2.js"></script>
-
+  <script src="../js/modulo5.js"></script>
 </body>
 </html>
