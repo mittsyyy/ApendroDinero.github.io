@@ -83,7 +83,7 @@
 
         <!-- MÓDULO 4 — bloqueado -->
         <div class="module-item">
-          <div class="module-card card-4 card-locked" onclick="showToast('¡Completa el Módulo 3 primero!')">
+          <div class="module-card card-4" onclick="openModule(4)" id="mod4-card">
              <img src="img/sp4.jpeg" alt="Módulo 4"> 
             <div class="card-placeholder">              
               <span style="font-size:1rem;color:white;font-weight:700;">Módulo de Simulación de Compra</span>
@@ -94,7 +94,7 @@
 
         <!-- MÓDULO 5 — bloqueado -->
         <div class="module-item">
-          <div class="module-card card-5 card-locked" onclick="showToast('¡Completa el Módulo 4 primero!')">
+          <div class="module-card card-5" onclick="openModule(5)" id="mod5-card">
              <img src="img/sp5.jpeg" alt="Módulo 5"> 
             <div class="card-placeholder">
               <span style="font-size:1rem;color:white;font-weight:700;">Módulo de Clasificación por Denominación</span>
@@ -110,6 +110,15 @@
     <div id="dots"></div>
   </div><!-- /content -->
 
+  <div id="start-screen">
+  <div class="start-card">
+    <div class="start-play-btn" onclick="empezarExperiencia()">
+      <i class="fa-solid fa-play"></i>
+    </div>
+    <h2>Empezar</h2>
+    <p>Toca para entrar al juego</p>
+  </div>
+</div>
 </div><!-- /app -->
 
 
@@ -196,5 +205,8 @@
 <div id="toast"></div>
 
 <script src="js/app.js"></script>
+<audio id="bg-music" loop>
+  <source src="audio/musica.mp3" type="audio/mpeg">
+</audio>
 </body>
 </html>

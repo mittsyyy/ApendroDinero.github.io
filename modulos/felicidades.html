@@ -70,7 +70,7 @@
       Obtuviste <span id="puntos">0</span> puntos <br>
       Siguiente nivel
     </div>
-<button id="next-btn" onclick="window.location.href='../casa.html'">
+<button id="next-btn" onclick="irACasa()">
   <i class="fa-solid fa-play"></i>
 </button>
   </div>
@@ -78,23 +78,43 @@
 </div>
 
 <script>
-  // Recibe el puntaje desde modulo1
   const params = new URLSearchParams(window.location.search);
-  const pts    = params.get('score');
-  if (pts) document.getElementById('puntos').textContent = pts;
+  const pts = Number(params.get('score')) || 0;
+  const moduleNum = Number(params.get('module')) || 0;
 
-  // Confetti
+  if (pts) {
+    document.getElementById('puntos').textContent = pts;
+  }
+
+  if (moduleNum > 0) {
+    localStorage.setItem(`modulo${moduleNum}_completado`, 'true');
+    localStorage.setItem(`modulo${moduleNum}_score`, String(pts));
+
+    const scoreKey = `modulo${moduleNum}_score_sumado`;
+    const yaSumado = localStorage.getItem(scoreKey) === 'true';
+
+    if (!yaSumado) {
+      const totalAnterior = Number(localStorage.getItem('total_score')) || 0;
+      localStorage.setItem('total_score', String(totalAnterior + pts));
+      localStorage.setItem(scoreKey, 'true');
+    }
+  }
+
   const colores = ['#FFD700','#FF6B6B','#4ECDC4','#45B7D1','#96CEB4','#FFEAA7','#DDA0DD'];
   for (let i = 0; i < 60; i++) {
-    const c          = document.createElement('div');
-    c.className      = 'confetti';
-    c.style.left     = Math.random() * 100 + 'vw';
-    c.style.background       = colores[Math.floor(Math.random() * colores.length)];
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = colores[Math.floor(Math.random() * colores.length)];
     c.style.animationDuration = (Math.random() * 3 + 2) + 's';
-    c.style.animationDelay   = (Math.random() * 2) + 's';
-    c.style.width    = (Math.random() * 10 + 6) + 'px';
-    c.style.height   = (Math.random() * 10 + 6) + 'px';
+    c.style.animationDelay = (Math.random() * 2) + 's';
+    c.style.width = (Math.random() * 10 + 6) + 'px';
+    c.style.height = (Math.random() * 10 + 6) + 'px';
     document.body.appendChild(c);
+  }
+
+  function irACasa() {
+    window.location.href = '../casa.html';
   }
 </script>
 

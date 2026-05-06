@@ -301,7 +301,7 @@ function selectOption(btn, value) {
 function nextQuestion() {
   currentQ++;
   if (currentQ >= totalQ) {
-    window.location.href = `felicidades.html?score=${score}`;
+    window.location.href = `felicidades.html?score=${score}&module=1`;
     return;
   }
   loadQuestion();
@@ -353,4 +353,27 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.style.color = 'white';
   }
   loadQuestion();
+});
+
+let musica;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const musicMuted = localStorage.getItem('music_muted') === 'true';
+  if (musicMuted) return;
+
+  musica = new Audio('../audio/musica.mp3');
+  musica.loop = true;
+  musica.volume = 0.2;
+
+  const savedTime = parseFloat(localStorage.getItem('music_time') || '0');
+  musica.currentTime = savedTime;
+
+  document.body.addEventListener('click', () => {
+    musica.play().catch(() => {});
+  }, { once: true });
+
+  window.addEventListener('beforeunload', () => {
+    if (!musica) return;
+    localStorage.setItem('music_time', String(musica.currentTime));
+  });
 });

@@ -867,3 +867,76 @@ body {
   margin-bottom: 10px;
   letter-spacing: 0.5px;
 }
+#start-screen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(240,249,255,0.96) 100%);
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#start-screen.hidden {
+  display: none;
+}
+
+.start-card {
+  background: white;
+  border-radius: 28px;
+  padding: 34px 28px;
+  min-width: 280px;
+  max-width: 360px;
+  text-align: center;
+  box-shadow: 0 18px 45px rgba(0,0,0,0.15);
+  animation: startPop 0.3s ease;
+}
+
+.start-card h2 {
+  font-family: 'Baloo 2', cursive;
+  font-size: 2rem;
+  color: #1a1a2e;
+  margin-top: 18px;
+  margin-bottom: 6px;
+}
+
+.start-card p {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  color: #555577;
+}
+
+.start-play-btn {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #60A5FA, #2563EB);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(37,99,235,0.35);
+  transition: transform 0.15s ease;
+}
+
+.start-play-btn:hover {
+  transform: scale(1.06);
+}
+
+.start-play-btn i {
+  color: white;
+  font-size: 2rem;
+  margin-left: 4px;
+}
+
+@keyframes startPop {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
