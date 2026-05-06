@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conteo Básico</title>
+  <link rel="stylesheet" href="../css/modulo3.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Nubes -->
+  <div class="cloud cloud-1"></div>
+  <div class="cloud cloud-2"></div>
+  <div class="cloud cloud-3"></div>
+
+  <!-- Árboles -->
+  <div class="tree tree-left">
+    <div class="tree-top-2"></div>
+    <div class="tree-top"></div>
+    <div class="tree-trunk"></div>
+  </div>
+
+  <div class="tree tree-right">
+    <div class="tree-top-2"></div>
+    <div class="tree-top"></div>
+    <div class="tree-trunk"></div>
+  </div>
+
+  <div class="tree tree-far-right">
+    <div class="tree-top-2"></div>
+    <div class="tree-top"></div>
+    <div class="tree-trunk"></div>
+  </div>
+
+  <!-- Barra superior -->
+  <div class="top-bar">
+    <span class="title-label">Conteo Básico</span>
+
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+
+    <div id="header-icons" style="display:flex;gap:10px;">
+      <button class="icon-btn" id="mute-btn" onclick="toggleMute()">
+        <i class="fa-solid fa-volume-high"></i>
+      </button>
+      <button class="icon-btn" onclick="openModal('settings-modal')">
+        <i class="fa-solid fa-gear"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Marcador -->
+  <div class="score-badge">
+    <i class="fa-solid fa-star" style="color:#F59E0B;"></i>
+    <span id="scoreDisplay">0</span>
+  </div>
+
+  <!-- Contenido principal -->
+  <div id="game-wrapper">
+    <div class="count-card" id="mainCard">
+
+      <div class="q-counter" id="qCounter">Pregunta 1 de 10</div>
+      <div class="question-text" id="questionText">¿Cuánto dinero hay?</div>
+
+      <!-- Área visual del dinero -->
+      <div class="money-area" id="moneyArea">
+        <!-- Aquí modulo3.js insertará las monedas/billetes -->
+      </div>
+
+      <!-- Opciones -->
+      <div class="options-count" id="optionsContainer">
+        <!-- Aquí modulo3.js insertará los botones -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Botón escuchar -->
+  <button class="listen-btn" onclick="escucharPregunta()">
+    <i class="fa-solid fa-ear-listen"></i> Escuchar pregunta
+  </button>
+
+  <!-- Feedback -->
+  <div id="mensajeFeedback"></div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- Modal Ajustes -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('settings-modal')">✕</button>
+      <h2>Ajustes</h2>
+
+      <div class="setting-row">
+        <span><i class="fa-solid fa-volume-high"></i> Sonido</span>
+        <div class="toggle on" id="toggle-sound" onclick="toggleSetting('toggle-sound')"></div>
+      </div>
+
+      <div class="setting-row">
+        <span><i class="fa-solid fa-music"></i> Música</span>
+        <div class="toggle on" id="toggle-music" onclick="toggleSetting('toggle-music')"></div>
+      </div>
+
+      <br>
+      <button class="btn-primary" onclick="closeModal('settings-modal')">Listo</button>
+    </div>
+  </div>
+
+  <script src="../js/modulo3.js"></script>
+</body>
+</html>
