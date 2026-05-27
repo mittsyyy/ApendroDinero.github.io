@@ -1,10 +1,21 @@
-const modules = [
-  { id:1, title:'Módulo 1 – Monedas Básicas', desc:'Aprende a identificar las monedas mexicanas y su valor. ¡Conviértete en un experto!', progress: 60 },
-  { id:2, title:'Módulo 2 – Súper Moneda',    desc:'Descubre el poder de la moneda de 10 pesos y sus secretos históricos.',             progress: 20 },
-  { id:3, title:'Módulo 3 – El Mercado',      desc:'Practica comprando y vendiendo en el mercado. ¿Cuánto te cambian de un billete?',   progress: 0  },
-  { id:4, title:'Módulo 4 – El Banco',        desc:'Aprende cómo funciona un banco y por qué es útil ahorrar.',                        progress: 0  },
-  { id:5, title:'Módulo 5 – Ahorro',          desc:'Crea tu plan de ahorro y alcanza tus metas financieras.',                          progress: 0  },
-];
+let modules = []; // Ahora empezará vacío y se llenará de la BD
+
+// Función para traer los módulos desde PHP
+async function cargarModulosDesdeBD() {
+    try {
+        // Asumiendo que creaste un php/get_modulos.php similar al de avatares
+        const respuesta = await fetch('php/get_modulos.php'); 
+        modules = await respuesta.json();
+
+        console.log("Módulos cargados:", modules);
+
+        // Una vez cargados, inicializamos el carrusel
+        buildDots();
+        updateCarousel();
+    } catch (error) {
+        console.error("Error al cargar módulos:", error);
+    }
+}
 
 // ── Carrusel ─────────────────────────
 const VISIBLE = 3;
@@ -101,6 +112,5 @@ function showToast(msg) {
 }
 
 // ── Init ──────────────────────────────
-buildDots();
-setTimeout(updateCarousel, 50);
+cargarModulosDesdeBD(); // En lugar de buildDots() directo, llamamos a la BD
 window.addEventListener('resize', updateCarousel);
