@@ -68,20 +68,44 @@
   <div class="card">
     <div class="card-info">
       Obtuviste <span id="puntos">0</span> puntos <br>
-      Siguiente nivel
+      <span id="next-label">Siguiente nivel</span>
     </div>
-<button id="next-btn" onclick="window.location.href='../casa.html'">
-  <i class="fa-solid fa-play"></i>
-</button>
+    <button id="next-btn" onclick="irSiguiente()">
+      <i class="fa-solid fa-play"></i>
+    </button>
+    <div style="margin-top:14px;text-align:center;">
+      <a href="../casa.html" style="color:#fff;text-decoration:underline;font-size:0.95rem;opacity:0.85;">
+        Volver al menú
+      </a>
+    </div>
   </div>
 
 </div>
 
 <script>
-  // Recibe el puntaje desde modulo1
+  // Recibe el puntaje y el módulo desde el query string
   const params = new URLSearchParams(window.location.search);
   const pts    = params.get('score');
+  const mod    = parseInt(params.get('module') || '1', 10);
   if (pts) document.getElementById('puntos').textContent = pts;
+
+  const TOTAL_MODULOS = 5;
+  const nextLabel = document.getElementById('next-label');
+
+  if (mod >= TOTAL_MODULOS) {
+    // Acabó el último módulo
+    nextLabel.textContent = '¡Completaste todos los módulos!';
+  } else {
+    nextLabel.textContent = `Siguiente: Módulo ${mod + 1}`;
+  }
+
+  function irSiguiente() {
+    if (mod >= TOTAL_MODULOS) {
+      window.location.href = '../casa.html';
+    } else {
+      window.location.href = `modulo${mod + 1}.html`;
+    }
+  }
 
   // Confetti
   const colores = ['#FFD700','#FF6B6B','#4ECDC4','#45B7D1','#96CEB4','#FFEAA7','#DDA0DD'];

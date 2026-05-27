@@ -301,7 +301,8 @@ function selectOption(btn, value) {
 function nextQuestion() {
   currentQ++;
   if (currentQ >= totalQ) {
-    window.location.href = `felicidades.html?score=${score}`;
+    if (window.AprendoStorage) AprendoStorage.guardarResultado(1, score, 10);
+    window.location.href = `felicidades.html?score=${score}&module=1`;
     return;
   }
   loadQuestion();

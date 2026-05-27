@@ -1,26 +1,228 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aprendo a Reconocer el Dinero</title>
-    <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aprendo a Reconocer el Dinero</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Baloo 2', cursive;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #87CEEB 0%, #FFE4B5 60%, #5DBB63 100%);
+      padding: 20px;
+    }
+
+    /* Decoración: nubes */
+    .cloud {
+      position: fixed;
+      background: rgba(255,255,255,0.85);
+      border-radius: 50px;
+      filter: blur(1px);
+      pointer-events: none;
+    }
+    .cloud::before, .cloud::after {
+      content: ''; position: absolute;
+      background: rgba(255,255,255,0.85);
+      border-radius: 50%;
+    }
+    .cloud-1 { width: 120px; height: 40px; top: 12%; left: 8%; }
+    .cloud-1::before { width: 60px; height: 60px; top: -25px; left: 15px; }
+    .cloud-1::after  { width: 40px; height: 40px; top: -15px; left: 50px; }
+    .cloud-2 { width: 90px; height: 30px; top: 18%; right: 12%; }
+    .cloud-2::before { width: 45px; height: 45px; top: -20px; left: 10px; }
+    .cloud-2::after  { width: 30px; height: 30px; top: -12px; left: 40px; }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      background: white;
+      border-radius: 30px;
+      padding: 40px 44px;
+      width: 100%;
+      max-width: 460px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      text-align: center;
+      animation: pop .4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes pop {
+      from { opacity: 0; transform: scale(0.9) translateY(20px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .logo-icon {
+      width: 90px; height: 90px;
+      background: linear-gradient(135deg, #FBBF24, #F97316);
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 44px;
+      color: white;
+      box-shadow: 0 8px 24px rgba(249,115,22,0.4);
+    }
+
+    h1 {
+      color: #1a1a2e;
+      font-size: 1.7rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      color: #6B7280;
+      font-size: 0.95rem;
+      margin-bottom: 24px;
+    }
+
+    /* Selector de rol */
+    .role-tabs {
+      display: flex;
+      gap: 8px;
+      background: #F3F4F6;
+      border-radius: 14px;
+      padding: 6px;
+      margin-bottom: 24px;
+    }
+    .role-tab {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 10px;
+      border-radius: 10px;
+      font-family: 'Baloo 2', cursive;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #6B7280;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .role-tab.active {
+      background: white;
+      color: #F97316;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #374151;
+      margin-bottom: 6px;
+      margin-top: 14px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #E5E7EB;
+      border-radius: 12px;
+      font-family: 'Baloo 2', cursive;
+      font-size: 1rem;
+      transition: border-color .2s;
+      outline: none;
+    }
+    input:focus {
+      border-color: #F97316;
+    }
+
+    .btn-primary {
+      width: 100%;
+      margin-top: 24px;
+      padding: 14px;
+      background: linear-gradient(135deg, #F97316, #EA580C);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(249,115,22,0.4);
+      transition: transform .15s, box-shadow .15s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(249,115,22,0.5); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .error-msg {
+      background: #FEE2E2;
+      color: #991B1B;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      margin-top: 14px;
+      display: none;
+    }
+    .error-msg.show { display: block; animation: shake .35s; }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25%     { transform: translateX(-6px); }
+      75%     { transform: translateX(6px); }
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: #9CA3AF;
+      margin-top: 14px;
+    }
+  </style>
 </head>
 <body>
 
+<div class="cloud cloud-1"></div>
+<div class="cloud cloud-2"></div>
+
 <div class="container" role="main">
-    <h1>Aprendo a Reconocer el Dinero</h1>
-    <p>¡Bienvenido! Ingresa tus datos para comenzar</p>
-<form>
-    <label for="nombre">Nombre del alumno:</label>
-    <input type="text" id="nombre" name="nombre" required>
+  <div class="logo-icon"><i class="fa-solid fa-coins"></i></div>
+  <h1>Aprendo a Reconocer el Dinero</h1>
+  <p class="subtitle">¡Bienvenido! Ingresa para comenzar</p>
 
-    <label for="edad">Edad:</label>
-    <input type="number" id="edad" name="edad" min="3" max="50" required>
+  <div class="role-tabs">
+    <button type="button" class="role-tab active" id="tab-alumno" onclick="setRol('alumno')">
+      <i class="fa-solid fa-child"></i> Alumno
+    </button>
+    <button type="button" class="role-tab" id="tab-profe" onclick="setRol('profesor')">
+      <i class="fa-solid fa-user-tie"></i> Profesor
+    </button>
+  </div>
 
- <button type="button" onclick="guardarNombre()">Empezar</button>
-</form>
+  <!-- Formulario Alumno -->
+  <div id="form-alumno">
+    <label for="nombre">Nombre del alumno</label>
+    <input type="text" id="nombre" placeholder="Escribe tu nombre" autocomplete="off">
+
+    <label for="edad">Edad</label>
+    <input type="number" id="edad" min="3" max="50" placeholder="¿Cuántos años tienes?">
+  </div>
+
+  <!-- Formulario Profesor -->
+  <div id="form-profesor" style="display:none;">
+    <label for="nombre-profe">Nombre</label>
+    <input type="text" id="nombre-profe" placeholder="Tu nombre" autocomplete="off">
+
+    <label for="password-profe">Contraseña</label>
+    <input type="password" id="password-profe" placeholder="••••••••" autocomplete="off">
+  </div>
+
+  <button type="button" class="btn-primary" onclick="iniciar()">
+    <i class="fa-solid fa-play"></i> Empezar
+  </button>
+
+  <div class="error-msg" id="error-msg"></div>
+
+  <p class="hint" id="hint-text">Modo alumno: tu progreso se guarda en este navegador.</p>
 </div>
+
 <script src="js/casa.js"></script>
 </body>
 </html>

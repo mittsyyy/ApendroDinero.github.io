@@ -6,6 +6,7 @@
   <title>Aprendo a Reconocer el Dinero — Dashboard</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script src="js/storage.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -325,20 +326,20 @@
 
   <div class="sb-section">Principal</div>
   <nav class="sb-nav">
-    <button class="sb-item active" onclick="setPage(this)">
+    <button class="sb-item active" data-view="resumen" onclick="setPage(this)">
       <i class="ti ti-layout-dashboard"></i>
-      <span class="sb-item-text">Dashboard</span>
+      <span class="sb-item-text">Resumen</span>
     </button>
-    <button class="sb-item" onclick="setPage(this)">
+    <button class="sb-item" data-view="alumnos" onclick="setPage(this)">
       <i class="ti ti-users"></i>
       <span class="sb-item-text">Alumnos</span>
-      <span class="sb-item-badge">5</span>
+      <span class="sb-item-badge" id="badge-alumnos">0</span>
     </button>
-    <button class="sb-item" onclick="setPage(this)">
+    <button class="sb-item" data-view="modulos" onclick="setPage(this)">
       <i class="ti ti-puzzle"></i>
       <span class="sb-item-text">Módulos</span>
     </button>
-    <button class="sb-item" onclick="setPage(this)">
+    <button class="sb-item" data-view="ranking" onclick="setPage(this)">
       <i class="ti ti-trophy"></i>
       <span class="sb-item-text">Ranking</span>
     </button>
@@ -346,15 +347,15 @@
 
   <div class="sb-section">Análisis</div>
   <nav class="sb-nav">
-    <button class="sb-item" onclick="setPage(this)">
+    <button class="sb-item" data-view="progreso" onclick="setPage(this)">
       <i class="ti ti-chart-bar"></i>
       <span class="sb-item-text">Progreso</span>
     </button>
-    <button class="sb-item" onclick="setPage(this)">
+    <button class="sb-item" data-view="logros" onclick="setPage(this)">
       <i class="ti ti-award"></i>
       <span class="sb-item-text">Logros</span>
     </button>
-    <button class="sb-item" onclick="setPage(this)">
+    <button class="sb-item" data-view="actividad" onclick="setPage(this)">
       <i class="ti ti-activity"></i>
       <span class="sb-item-text">Actividad</span>
     </button>
@@ -362,7 +363,7 @@
 
   <div class="sb-section">Sistema</div>
   <nav class="sb-nav">
-    <button class="sb-item" onclick="setPage(this)">
+    <button class="sb-item" data-view="config" onclick="setPage(this)">
       <i class="ti ti-settings"></i>
       <span class="sb-item-text">Configuración</span>
     </button>
@@ -375,9 +376,13 @@
   <div class="sb-profile">
     <div class="sb-avatar">🦉</div>
     <div class="sb-profile-info">
-      <div class="sb-profile-name">Profa. García</div>
+      <div class="sb-profile-name" id="sb-profile-name">Profesor/a</div>
       <div class="sb-profile-role">Maestra · Admin</div>
     </div>
+    <button onclick="cerrarSesion()" title="Cerrar sesión"
+            style="background:transparent;border:none;color:rgba(255,255,255,0.6);cursor:pointer;font-size:16px;padding:6px;margin-left:auto;">
+      <i class="ti ti-logout"></i>
+    </button>
   </div>
 </aside>
 
@@ -396,85 +401,208 @@
 
   <div class="content">
 
-    <div class="metrics">
-      <div class="metric">
-        <div class="metric-icon"><i class="ti ti-users"></i></div>
-        <div class="metric-value">5</div>
-        <div class="metric-label">Alumnos activos</div>
-        <div class="metric-sub">3 jugaron esta semana</div>
-      </div>
-      <div class="metric">
-        <div class="metric-icon"><i class="ti ti-star"></i></div>
-        <div class="metric-value">1,230</div>
-        <div class="metric-label">Puntos acumulados</div>
-        <div class="metric-sub">Promedio 246 / alumno</div>
-      </div>
-      <div class="metric">
-        <div class="metric-icon"><i class="ti ti-puzzle"></i></div>
-        <div class="metric-value">15</div>
-        <div class="metric-label">Módulos completados</div>
-        <div class="metric-sub">60% del total posible</div>
-      </div>
-      <div class="metric">
-        <div class="metric-icon"><i class="ti ti-trophy"></i></div>
-        <div class="metric-value">20</div>
-        <div class="metric-label">Logros otorgados</div>
-        <div class="metric-sub">Diego lidera con 11</div>
-      </div>
-    </div>
+    <!-- ═══════ VISTA: RESUMEN ═══════ -->
+    <section class="dash-view" data-view="resumen">
 
-    <div class="grid2">
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-icon"><i class="ti ti-users"></i></div>
+          <div class="metric-value" id="m-alumnos">0</div>
+          <div class="metric-label">Alumnos activos</div>
+          <div class="metric-sub" id="m-alumnos-sub">Sin datos todavía</div>
+        </div>
+        <div class="metric">
+          <div class="metric-icon"><i class="ti ti-star"></i></div>
+          <div class="metric-value" id="m-puntos">0</div>
+          <div class="metric-label">Puntos acumulados</div>
+          <div class="metric-sub" id="m-puntos-sub">Promedio 0 / alumno</div>
+        </div>
+        <div class="metric">
+          <div class="metric-icon"><i class="ti ti-puzzle"></i></div>
+          <div class="metric-value" id="m-mods">0</div>
+          <div class="metric-label">Módulos completados</div>
+          <div class="metric-sub" id="m-mods-sub">0% del total posible</div>
+        </div>
+        <div class="metric">
+          <div class="metric-icon"><i class="ti ti-trophy"></i></div>
+          <div class="metric-value" id="m-logros">0</div>
+          <div class="metric-label">Logros otorgados</div>
+          <div class="metric-sub" id="m-logros-sub">—</div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="ti ti-medal"></i> Ranking de alumnos</div>
+            <span class="card-action" onclick="cambiarVista('ranking')" style="cursor:pointer;">Ver todos →</span>
+          </div>
+          <div id="ranking-list"></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="ti ti-chart-bar"></i> Completación por módulo</div>
+          </div>
+          <div id="mod-bars"></div>
+        </div>
+      </div>
+
+      <div class="grid3">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-activity"></i> Actividad reciente</div></div>
+          <div id="activity-list"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-award"></i> Logros recientes</div></div>
+          <div id="logros-list"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-flame"></i> Rachas activas</div></div>
+          <div id="rachas-list"></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ═══════ VISTA: ALUMNOS ═══════ -->
+    <section class="dash-view" data-view="alumnos" style="display:none;">
       <div class="card">
         <div class="card-header">
-          <div class="card-title"><i class="ti ti-medal"></i> Ranking de alumnos</div>
-          <span class="card-action">Ver todos →</span>
+          <div class="card-title"><i class="ti ti-users"></i> Todos los alumnos</div>
+          <input type="text" id="filtro-alumnos" placeholder="Buscar alumno..."
+                 style="border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px;outline:none;">
         </div>
-        <div id="ranking-list"></div>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title"><i class="ti ti-chart-bar"></i> Completación por módulo</div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+              <tr style="text-align:left;border-bottom:1px solid var(--border);color:var(--text-secondary);">
+                <th style="padding:10px 8px;">Alumno</th>
+                <th style="padding:10px 8px;">Puntos</th>
+                <th style="padding:10px 8px;">Módulos completados</th>
+                <th style="padding:10px 8px;">Mejor módulo</th>
+                <th style="padding:10px 8px;">Racha</th>
+                <th style="padding:10px 8px;">Logros</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-alumnos"></tbody>
+          </table>
         </div>
-        <div id="mod-bars"></div>
       </div>
-    </div>
+    </section>
 
-    <div class="grid3">
+    <!-- ═══════ VISTA: MÓDULOS ═══════ -->
+    <section class="dash-view" data-view="modulos" style="display:none;">
       <div class="card">
-        <div class="card-header"><div class="card-title"><i class="ti ti-activity"></i> Actividad reciente</div></div>
-        <div id="activity-list"></div>
+        <div class="card-header"><div class="card-title"><i class="ti ti-puzzle"></i> Detalle por módulo</div></div>
+        <div id="modulos-detalle" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;"></div>
       </div>
-      <div class="card">
-        <div class="card-header"><div class="card-title"><i class="ti ti-award"></i> Logros recientes</div></div>
-        <div id="logros-list"></div>
-      </div>
-      <div class="card">
-        <div class="card-header"><div class="card-title"><i class="ti ti-flame"></i> Rachas activas</div></div>
-        <div id="rachas-list"></div>
-      </div>
-    </div>
+    </section>
 
-    <div class="section-full card">
-      <div class="card-header"><div class="card-title"><i class="ti ti-layout-grid"></i> Progreso por alumno y módulo</div></div>
-      <div class="tab-row" id="prog-tabs"></div>
-      <div class="prog-grid" id="prog-grid"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-header"><div class="card-title"><i class="ti ti-chart-bar"></i> Puntaje promedio por módulo</div></div>
-      <div class="chart-legend" id="chart-legend"></div>
-      <div class="chart-wrap">
-        <canvas id="modChart" role="img"
-          aria-label="Gráfica de barras con el puntaje promedio de todos los alumnos por cada módulo del juego.">
-          Módulo 1: 7.6, Módulo 2: 7.8, Módulo 3: 6.2, Módulo 4: 4.8, Módulo 5: 2.0
-        </canvas>
+    <!-- ═══════ VISTA: RANKING ═══════ -->
+    <section class="dash-view" data-view="ranking" style="display:none;">
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-trophy"></i> Ranking completo</div></div>
+        <div id="ranking-completo"></div>
       </div>
-    </div>
+    </section>
+
+    <!-- ═══════ VISTA: PROGRESO ═══════ -->
+    <section class="dash-view" data-view="progreso" style="display:none;">
+      <div class="section-full card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-layout-grid"></i> Progreso por alumno y módulo</div></div>
+        <div class="tab-row" id="prog-tabs"></div>
+        <div class="prog-grid" id="prog-grid"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-chart-bar"></i> Puntaje promedio por módulo</div></div>
+        <div class="chart-legend" id="chart-legend"></div>
+        <div class="chart-wrap">
+          <canvas id="modChart" role="img"
+            aria-label="Gráfica de barras con el puntaje promedio de todos los alumnos por cada módulo del juego.">
+          </canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ VISTA: LOGROS ═══════ -->
+    <section class="dash-view" data-view="logros" style="display:none;">
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-award"></i> Logros del grupo</div></div>
+        <div id="logros-full" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;"></div>
+      </div>
+    </section>
+
+    <!-- ═══════ VISTA: ACTIVIDAD ═══════ -->
+    <section class="dash-view" data-view="actividad" style="display:none;">
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-activity"></i> Historial de actividad</div></div>
+        <div id="actividad-completa"></div>
+      </div>
+    </section>
+
+    <!-- ═══════ VISTA: CONFIGURACIÓN ═══════ -->
+    <section class="dash-view" data-view="config" style="display:none;">
+      <div class="card" style="max-width:640px;">
+        <div class="card-header"><div class="card-title"><i class="ti ti-settings"></i> Configuración</div></div>
+        <div style="padding:8px 0;">
+
+          <div style="padding:14px 0;border-bottom:1px solid var(--border);">
+            <div style="font-weight:600;margin-bottom:4px;">Profesor</div>
+            <div style="color:var(--text-secondary);font-size:13px;" id="conf-profesor-name">—</div>
+          </div>
+
+          <div style="padding:14px 0;border-bottom:1px solid var(--border);">
+            <div style="font-weight:600;margin-bottom:8px;">Datos guardados</div>
+            <div style="color:var(--text-secondary);font-size:13px;margin-bottom:10px;" id="conf-stats">—</div>
+            <button onclick="resetearDatos()" style="background:#FEE2E2;color:#991B1B;border:none;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
+              <i class="ti ti-trash"></i> Borrar todos los datos
+            </button>
+            <div style="font-size:11px;color:var(--text-hint);margin-top:6px;">
+              Borra el progreso de TODOS los alumnos en este navegador. No se puede deshacer.
+            </div>
+          </div>
+
+          <div style="padding:14px 0;border-bottom:1px solid var(--border);">
+            <div style="font-weight:600;margin-bottom:8px;">Exportar</div>
+            <button onclick="exportarDatos()" style="background:var(--sb-bg);color:white;border:none;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
+              <i class="ti ti-download"></i> Descargar JSON
+            </button>
+            <div style="font-size:11px;color:var(--text-hint);margin-top:6px;">
+              Descarga una copia del progreso de todos los alumnos.
+            </div>
+          </div>
+
+          <div style="padding:14px 0;">
+            <div style="font-weight:600;margin-bottom:8px;">Sesión</div>
+            <button onclick="cerrarSesion()" style="background:transparent;color:var(--text-primary);border:1px solid var(--border-strong);padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
+              <i class="ti ti-logout"></i> Cerrar sesión
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </section>
 
   </div>
 </div>
 
 <script>
+  // Guardia de sesión: solo profesor puede ver el dashboard
+  (function () {
+    const rol = localStorage.getItem('rolSesion');
+    if (rol !== 'profesor') {
+      // Si no es profesor (o no hay sesión), redirigir al login
+      window.location.href = 'index.html';
+    }
+  })();
+
+  function cerrarSesion() {
+    localStorage.removeItem('rolSesion');
+    localStorage.removeItem('nombreProfesor');
+    window.location.href = 'index.html';
+  }
+
   function toggleSidebar() {
     const sb   = document.getElementById('sidebar');
     const main = document.getElementById('main-content');
@@ -488,43 +616,131 @@
   function setPage(el) {
     document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
     el.classList.add('active');
+    const view = el.dataset.view;
+    if (view) cambiarVista(view, /*skipBtnUpdate=*/true);
   }
 
-  const alumnos = [
-    { nombre:'Diego López',     avatar:'🧑‍🚀', color:'#4A90E2', puntos:450, racha:7, logros:11,
-      progreso:[{mod:1,score:10,comp:1},{mod:2,score:10,comp:1},{mod:3,score:10,comp:1},{mod:4,score:10,comp:1},{mod:5,score:10,comp:1}] },
-    { nombre:'Isabella Torres', avatar:'🦄',   color:'#FF6B9D', puntos:310, racha:5, logros:4,
-      progreso:[{mod:1,score:10,comp:1},{mod:2,score:9,comp:1},{mod:3,score:8,comp:1},{mod:4,score:7,comp:0},{mod:5,score:0,comp:0}] },
-    { nombre:'Mateo Flores',    avatar:'🤖',   color:'#9B59B6', puntos:230, racha:2, logros:2,
-      progreso:[{mod:1,score:9,comp:1},{mod:2,score:8,comp:1},{mod:3,score:7,comp:1},{mod:4,score:0,comp:0},{mod:5,score:0,comp:0}] },
-    { nombre:'Sofía Ramírez',   avatar:'🐱',   color:'#F5A623', puntos:160, racha:3, logros:2,
-      progreso:[{mod:1,score:8,comp:1},{mod:2,score:6,comp:1},{mod:3,score:6,comp:0},{mod:4,score:0,comp:0},{mod:5,score:0,comp:0}] },
-    { nombre:'Valentina Cruz',  avatar:'🐰',   color:'#FF69B4', puntos:80,  racha:1, logros:1,
-      progreso:[{mod:1,score:7,comp:1},{mod:2,score:6,comp:0},{mod:3,score:0,comp:0},{mod:4,score:0,comp:0},{mod:5,score:0,comp:0}] },
-  ];
-  const modulos = [
-    {id:1,titulo:'Módulo 1',nombre:'Monedas Básicas',icono:'🪙',color:'#F5A623'},
-    {id:2,titulo:'Módulo 2',nombre:'Súper Moneda',   icono:'⚖️',color:'#4A90E2'},
-    {id:3,titulo:'Módulo 3',nombre:'El Mercado',     icono:'🧮',color:'#7ED321'},
-    {id:4,titulo:'Módulo 4',nombre:'El Banco',       icono:'🛒',color:'#9B59B6'},
-    {id:5,titulo:'Módulo 5',nombre:'Ahorro',         icono:'🏦',color:'#E74C3C'},
-  ];
-  const actividad = [
-    {alumno:'Diego',    avatar:'🧑‍🚀',modulo:'Súper Moneda',   icono:'⚖️',color:'#4A90E2',puntaje:10,total:10},
-    {alumno:'Diego',    avatar:'🧑‍🚀',modulo:'Ahorro',         icono:'🏦',color:'#E74C3C',puntaje:10,total:10},
-    {alumno:'Isabella', avatar:'🦄',  modulo:'Monedas Básicas',icono:'🪙',color:'#F5A623',puntaje:10,total:10},
-    {alumno:'Sofía',    avatar:'🐱',  modulo:'Monedas Básicas',icono:'🪙',color:'#F5A623',puntaje:8, total:10},
-    {alumno:'Valentina',avatar:'🐰',  modulo:'Monedas Básicas',icono:'🪙',color:'#F5A623',puntaje:7, total:10},
-    {alumno:'Mateo',    avatar:'🤖',  modulo:'El Mercado',     icono:'🧮',color:'#7ED321',puntaje:7, total:10},
-  ];
-  const logros_recientes = [
-    {emoji:'👑',nombre:'Leyenda Financiera',  quien:'Diego'},
-    {emoji:'🏆',nombre:'Maestro del Dinero',  quien:'Diego'},
-    {emoji:'⚡',nombre:'Imparable (racha 7d)',quien:'Diego'},
-    {emoji:'💰',nombre:'Perfecto M1',         quien:'Isabella'},
-    {emoji:'💯',nombre:'Centenario',          quien:'Isabella'},
-    {emoji:'🌟',nombre:'En Camino',           quien:'Mateo'},
-  ];
+  function cambiarVista(view, skipBtnUpdate) {
+    document.querySelectorAll('.dash-view').forEach(s => {
+      s.style.display = (s.dataset.view === view) ? '' : 'none';
+    });
+    if (!skipBtnUpdate) {
+      document.querySelectorAll('.sb-item').forEach(b => {
+        b.classList.toggle('active', b.dataset.view === view);
+      });
+    }
+    // Actualizar título superior
+    const titles = {
+      resumen:   ['Dashboard general',  'Vista general del grupo'],
+      alumnos:   ['Alumnos',            'Lista completa con métricas individuales'],
+      modulos:   ['Módulos',            'Rendimiento y completación por módulo'],
+      ranking:   ['Ranking',            'Tabla completa de posiciones'],
+      progreso:  ['Progreso',           'Análisis detallado por alumno y módulo'],
+      logros:    ['Logros',             'Logros obtenidos por el grupo'],
+      actividad: ['Actividad',          'Historial reciente de juego'],
+      config:    ['Configuración',      'Ajustes del sistema']
+    };
+    const t = titles[view];
+    if (t) {
+      const tt = document.querySelector('.topbar-title');
+      const ts = document.querySelector('.topbar-sub');
+      if (tt) tt.textContent = t[0];
+      if (ts) ts.textContent = t[1];
+    }
+    // Crear/redimensionar el chart la primera vez que se entra a Progreso
+    if (view === 'progreso' && typeof crearChartSiHaceFalta === 'function') {
+      // pequeño delay para que el contenedor tenga dimensiones
+      setTimeout(crearChartSiHaceFalta, 30);
+    }
+  }
+
+  // ═══════ DATOS DEL DASHBOARD ═══════
+  // Lee progreso real desde localStorage (via storage.js).
+  // Si no hay datos aún, usa demo para que el dashboard no se vea vacío.
+
+  const dashData = window.AprendoStorage
+    ? window.AprendoStorage.obtenerDashboard()
+    : { hayDatos: false, jugadores: [], modulos: [], actividad: [] };
+
+  const DEMO = {
+    alumnos: [
+      { nombre:'Diego López',     avatar:'🧑‍🚀', color:'#4A90E2', puntos:450, racha:7, logros:11,
+        progreso:[{mod:1,score:10,comp:1},{mod:2,score:10,comp:1},{mod:3,score:10,comp:1},{mod:4,score:10,comp:1},{mod:5,score:10,comp:1}] },
+      { nombre:'Isabella Torres', avatar:'🦄',   color:'#FF6B9D', puntos:310, racha:5, logros:4,
+        progreso:[{mod:1,score:10,comp:1},{mod:2,score:9,comp:1},{mod:3,score:8,comp:1},{mod:4,score:7,comp:0},{mod:5,score:0,comp:0}] },
+      { nombre:'Mateo Flores',    avatar:'🤖',   color:'#9B59B6', puntos:230, racha:2, logros:2,
+        progreso:[{mod:1,score:9,comp:1},{mod:2,score:8,comp:1},{mod:3,score:7,comp:1},{mod:4,score:0,comp:0},{mod:5,score:0,comp:0}] },
+      { nombre:'Sofía Ramírez',   avatar:'🐱',   color:'#F5A623', puntos:160, racha:3, logros:2,
+        progreso:[{mod:1,score:8,comp:1},{mod:2,score:6,comp:1},{mod:3,score:6,comp:0},{mod:4,score:0,comp:0},{mod:5,score:0,comp:0}] },
+      { nombre:'Valentina Cruz',  avatar:'🐰',   color:'#FF69B4', puntos:80,  racha:1, logros:1,
+        progreso:[{mod:1,score:7,comp:1},{mod:2,score:6,comp:0},{mod:3,score:0,comp:0},{mod:4,score:0,comp:0},{mod:5,score:0,comp:0}] },
+    ],
+    actividad: [
+      {alumno:'Diego',    avatar:'🧑‍🚀',modulo:'Súper Moneda',   icono:'⚖️',color:'#4A90E2',puntaje:10,total:10},
+      {alumno:'Diego',    avatar:'🧑‍🚀',modulo:'Ahorro',         icono:'🏦',color:'#E74C3C',puntaje:10,total:10},
+      {alumno:'Isabella', avatar:'🦄',  modulo:'Monedas Básicas',icono:'🪙',color:'#F5A623',puntaje:10,total:10},
+      {alumno:'Sofía',    avatar:'🐱',  modulo:'Monedas Básicas',icono:'🪙',color:'#F5A623',puntaje:8, total:10},
+      {alumno:'Valentina',avatar:'🐰',  modulo:'Monedas Básicas',icono:'🪙',color:'#F5A623',puntaje:7, total:10},
+      {alumno:'Mateo',    avatar:'🤖',  modulo:'El Mercado',     icono:'🧮',color:'#7ED321',puntaje:7, total:10},
+    ]
+  };
+
+  // Si no hay jugadores reales, usamos demo
+  const usandoDemo = !dashData.hayDatos;
+  const alumnos = usandoDemo ? DEMO.alumnos : dashData.jugadores;
+  const modulos = (dashData.modulos && dashData.modulos.length)
+    ? dashData.modulos
+    : [
+        {id:1,titulo:'Módulo 1',nombre:'Monedas Básicas',icono:'🪙',color:'#F5A623'},
+        {id:2,titulo:'Módulo 2',nombre:'Súper Moneda',   icono:'⚖️',color:'#4A90E2'},
+        {id:3,titulo:'Módulo 3',nombre:'El Mercado',     icono:'🧮',color:'#7ED321'},
+        {id:4,titulo:'Módulo 4',nombre:'El Banco',       icono:'🛒',color:'#9B59B6'},
+        {id:5,titulo:'Módulo 5',nombre:'Ahorro',         icono:'🏦',color:'#E74C3C'},
+      ];
+  const actividad = usandoDemo ? DEMO.actividad : dashData.actividad.map(a => ({
+    alumno: (a.alumno || '').split(' ')[0],
+    avatar: a.avatar,
+    color:  a.color,
+    modulo: a.modulo,
+    icono:  a.icono,
+    puntaje: a.puntaje,
+    total:   a.total
+  }));
+
+  // Logros derivados de progreso real (o demo si no hay)
+  const logros_recientes = usandoDemo
+    ? [
+        {emoji:'👑',nombre:'Leyenda Financiera',  quien:'Diego'},
+        {emoji:'🏆',nombre:'Maestro del Dinero',  quien:'Diego'},
+        {emoji:'⚡',nombre:'Imparable (racha 7d)',quien:'Diego'},
+        {emoji:'💰',nombre:'Perfecto M1',         quien:'Isabella'},
+        {emoji:'💯',nombre:'Centenario',          quien:'Isabella'},
+        {emoji:'🌟',nombre:'En Camino',           quien:'Mateo'},
+      ]
+    : (function() {
+        const out = [];
+        alumnos.forEach(a => {
+          const nombre = a.nombre.split(' ')[0];
+          const modsCompletos = a.progreso.filter(p => p.comp === 1).length;
+          const modsPerfectos = a.progreso.filter(p => p.score === 10).length;
+          if (modsCompletos === 5) out.push({emoji:'👑',nombre:'Leyenda Financiera',quien:nombre});
+          if (modsPerfectos >= 3)  out.push({emoji:'🏆',nombre:'Maestro del Dinero',quien:nombre});
+          if (a.racha >= 7)        out.push({emoji:'⚡',nombre:`Imparable (${a.racha}d)`,quien:nombre});
+          if (a.progreso[0] && a.progreso[0].score === 10) out.push({emoji:'💰',nombre:'Perfecto M1',quien:nombre});
+          if (a.puntos >= 100)     out.push({emoji:'💯',nombre:'Centenario',quien:nombre});
+          if (modsCompletos >= 1 && modsCompletos < 5) out.push({emoji:'🌟',nombre:'En Camino',quien:nombre});
+        });
+        return out.slice(0, 6);
+      })();
+
+  // Banner si se usan datos demo
+  if (usandoDemo) {
+    const banner = document.createElement('div');
+    banner.style.cssText = 'background:#FEF3C7;border:1px solid #FCD34D;color:#92400E;padding:10px 16px;border-radius:8px;margin-bottom:16px;font-size:13px;';
+    banner.innerHTML = '📊 <strong>Datos de ejemplo</strong> — Aún no hay jugadores reales. Cuando alguien juegue desde este navegador y guarde su nombre en la pantalla inicial, verás aquí su progreso real.';
+    const main = document.querySelector('.main-content') || document.body;
+    main.insertBefore(banner, main.firstChild);
+  }
 
   // Ranking
   const rankEl = document.getElementById('ranking-list');
@@ -549,11 +765,11 @@
   const barEl = document.getElementById('mod-bars');
   modulos.forEach(m => {
     const comp = alumnos.filter(a=>a.progreso.find(p=>p.mod===m.id&&p.comp===1)).length;
-    const pct  = Math.round(comp/alumnos.length*100);
+    const pct  = alumnos.length ? Math.round(comp/alumnos.length*100) : 0;
     const div  = document.createElement('div');
     div.className = 'bar-row';
     div.innerHTML = `
-      <div class="bar-label"><span>${m.icono} ${m.nombre}</span><span>${comp}/5</span></div>
+      <div class="bar-label"><span>${m.icono} ${m.nombre}</span><span>${comp}/${alumnos.length}</span></div>
       <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${m.color};"></div></div>`;
     barEl.appendChild(div);
   });
@@ -638,6 +854,7 @@
   // Chart
   const avgData=modulos.map(m=>{
     const scores=alumnos.map(a=>{const p=a.progreso.find(x=>x.mod===m.id);return p?p.score:0;});
+    if (!scores.length) return 0;
     return Math.round(scores.reduce((s,v)=>s+v,0)/scores.length*10)/10;
   });
   const legendEl=document.getElementById('chart-legend');
@@ -647,28 +864,293 @@
     span.innerHTML=`<span class="legend-dot" style="background:${m.color};"></span>${m.icono} ${m.nombre}: <strong>${avgData[i]}</strong>`;
     legendEl.appendChild(span);
   });
-  new Chart(document.getElementById('modChart'),{
-    type:'bar',
-    data:{
-      labels:modulos.map(m=>m.icono+' '+m.nombre),
-      datasets:[{
-        label:'Puntaje promedio',
-        data:avgData,
-        backgroundColor:modulos.map(m=>m.color+'BB'),
-        borderColor:modulos.map(m=>m.color),
-        borderWidth:1,
-        borderRadius:6,
-      }]
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{
-        y:{min:0,max:10,ticks:{stepSize:2,font:{size:11}},grid:{color:'rgba(0,0,0,.05)'}},
-        x:{ticks:{font:{size:11},autoSkip:false},grid:{display:false}}
-      }
+  let modChartInstance = null;
+  function crearChartSiHaceFalta() {
+    if (modChartInstance) {
+      modChartInstance.resize();
+      return;
     }
-  });
+    const ctx = document.getElementById('modChart');
+    if (!ctx) return;
+    modChartInstance = new Chart(ctx, {
+      type:'bar',
+      data:{
+        labels:modulos.map(m=>m.icono+' '+m.nombre),
+        datasets:[{
+          label:'Puntaje promedio',
+          data:avgData,
+          backgroundColor:modulos.map(m=>m.color+'BB'),
+          borderColor:modulos.map(m=>m.color),
+          borderWidth:1,
+          borderRadius:6,
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+          y:{min:0,max:10,ticks:{stepSize:2,font:{size:11}},grid:{color:'rgba(0,0,0,.05)'}},
+          x:{ticks:{font:{size:11},autoSkip:false},grid:{display:false}}
+        }
+      }
+    });
+  }
+
+  // Mostrar nombre del profesor en el sidebar
+  const nombreProfe = localStorage.getItem('nombreProfesor') || 'Profesor/a';
+  const nameEl = document.getElementById('sb-profile-name');
+  if (nameEl) nameEl.textContent = 'Profa. ' + nombreProfe;
+
+  // ═══════ MÉTRICAS DEL HEADER (resumen) ═══════
+  (function calcularMetricas() {
+    const numAlumnos = alumnos.length;
+    const totalPuntos = alumnos.reduce((s, a) => s + (a.puntos || 0), 0);
+    const promedioPuntos = numAlumnos ? Math.round(totalPuntos / numAlumnos) : 0;
+    const totalModsPosibles = numAlumnos * modulos.length;
+    const modsCompletados = alumnos.reduce(
+      (s, a) => s + a.progreso.filter(p => p.comp === 1).length, 0
+    );
+    const pctMods = totalModsPosibles ? Math.round(modsCompletados / totalModsPosibles * 100) : 0;
+    const totalLogros = logros_recientes.length;
+    const lider = alumnos.length
+      ? alumnos.reduce((m, a) => (a.puntos > m.puntos ? a : m), alumnos[0])
+      : null;
+
+    document.getElementById('m-alumnos').textContent     = numAlumnos;
+    document.getElementById('m-alumnos-sub').textContent = numAlumnos
+      ? `${numAlumnos} ${numAlumnos === 1 ? 'alumno registrado' : 'alumnos registrados'}`
+      : 'Sin datos todavía';
+    document.getElementById('m-puntos').textContent      = totalPuntos.toLocaleString();
+    document.getElementById('m-puntos-sub').textContent  = `Promedio ${promedioPuntos} / alumno`;
+    document.getElementById('m-mods').textContent        = modsCompletados;
+    document.getElementById('m-mods-sub').textContent    = `${pctMods}% del total posible`;
+    document.getElementById('m-logros').textContent      = totalLogros;
+    document.getElementById('m-logros-sub').textContent  = lider
+      ? `${lider.nombre.split(' ')[0]} va al frente con ${lider.puntos} pts`
+      : '—';
+
+    const badge = document.getElementById('badge-alumnos');
+    if (badge) badge.textContent = numAlumnos;
+  })();
+
+  // ═══════ VISTA: ALUMNOS (tabla) ═══════
+  function renderTablaAlumnos(filtro = '') {
+    const tbody = document.getElementById('tabla-alumnos');
+    if (!tbody) return;
+    const f = filtro.trim().toLowerCase();
+    const filtrados = alumnos.filter(a => !f || a.nombre.toLowerCase().includes(f));
+    tbody.innerHTML = '';
+
+    if (!filtrados.length) {
+      tbody.innerHTML = `<tr><td colspan="6" style="padding:24px;text-align:center;color:var(--text-hint);">Sin resultados</td></tr>`;
+      return;
+    }
+
+    filtrados.forEach(a => {
+      const compl = a.progreso.filter(p => p.comp === 1).length;
+      const mejorMod = a.progreso.reduce((best, p) => (p.score > (best?.score || 0) ? p : best), null);
+      const mejorInfo = mejorMod && mejorMod.score > 0
+        ? `${modulos.find(m => m.id === mejorMod.mod)?.icono || ''} M${mejorMod.mod} (${mejorMod.score}/10)`
+        : '—';
+      const tr = document.createElement('tr');
+      tr.style.borderBottom = '1px solid var(--border)';
+      tr.innerHTML = `
+        <td style="padding:10px 8px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:32px;height:32px;border-radius:50%;background:${a.color}22;display:flex;align-items:center;justify-content:center;font-size:16px;">${a.avatar}</div>
+            <span style="font-weight:600;">${a.nombre}</span>
+          </div>
+        </td>
+        <td style="padding:10px 8px;font-weight:700;color:var(--acc1);">${(a.puntos||0).toLocaleString()}</td>
+        <td style="padding:10px 8px;">${compl} / ${modulos.length}</td>
+        <td style="padding:10px 8px;">${mejorInfo}</td>
+        <td style="padding:10px 8px;">${a.racha}d 🔥</td>
+        <td style="padding:10px 8px;">${a.logros || 0}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+  renderTablaAlumnos();
+  const filtroEl = document.getElementById('filtro-alumnos');
+  if (filtroEl) filtroEl.addEventListener('input', e => renderTablaAlumnos(e.target.value));
+
+  // ═══════ VISTA: MÓDULOS (detalle) ═══════
+  (function renderModulosDetalle() {
+    const cont = document.getElementById('modulos-detalle');
+    if (!cont) return;
+    cont.innerHTML = '';
+    modulos.forEach(m => {
+      const completaron = alumnos.filter(a => a.progreso.find(p => p.mod === m.id && p.comp === 1)).length;
+      const jugaron     = alumnos.filter(a => a.progreso.find(p => p.mod === m.id && p.score > 0)).length;
+      const scores      = alumnos.map(a => a.progreso.find(p => p.mod === m.id)?.score || 0);
+      const promedio    = scores.length ? Math.round(scores.reduce((s,v)=>s+v,0)/scores.length*10)/10 : 0;
+      const tasaCompl   = alumnos.length ? Math.round(completaron/alumnos.length*100) : 0;
+
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.cssText = `border-top:4px solid ${m.color};margin:0;`;
+      card.innerHTML = `
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div style="width:48px;height:48px;border-radius:12px;background:${m.color}22;display:flex;align-items:center;justify-content:center;font-size:24px;">${m.icono}</div>
+          <div>
+            <div style="font-weight:700;font-size:15px;">${m.titulo}</div>
+            <div style="color:var(--text-secondary);font-size:12px;">${m.nombre}</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px;">
+          <div>
+            <div style="color:var(--text-hint);font-size:11px;">Jugaron</div>
+            <div style="font-weight:700;font-size:16px;">${jugaron}</div>
+          </div>
+          <div>
+            <div style="color:var(--text-hint);font-size:11px;">Completaron</div>
+            <div style="font-weight:700;font-size:16px;">${completaron}</div>
+          </div>
+          <div>
+            <div style="color:var(--text-hint);font-size:11px;">Promedio</div>
+            <div style="font-weight:700;font-size:16px;">${promedio}/10</div>
+          </div>
+          <div>
+            <div style="color:var(--text-hint);font-size:11px;">Tasa completación</div>
+            <div style="font-weight:700;font-size:16px;">${tasaCompl}%</div>
+          </div>
+        </div>
+        <div style="margin-top:14px;background:var(--bg-muted);border-radius:8px;height:6px;overflow:hidden;">
+          <div style="height:100%;width:${tasaCompl}%;background:${m.color};transition:width .4s;"></div>
+        </div>
+      `;
+      cont.appendChild(card);
+    });
+  })();
+
+  // ═══════ VISTA: RANKING (completo) ═══════
+  (function renderRankingCompleto() {
+    const cont = document.getElementById('ranking-completo');
+    if (!cont) return;
+    const ordenados = [...alumnos].sort((a, b) => b.puntos - a.puntos);
+    cont.innerHTML = '';
+    if (!ordenados.length) {
+      cont.innerHTML = `<div style="padding:24px;text-align:center;color:var(--text-hint);">Sin alumnos registrados</div>`;
+      return;
+    }
+    ordenados.forEach((a, i) => {
+      const medals = ['🥇','🥈','🥉'];
+      const div = document.createElement('div');
+      div.className = 'alumno-row';
+      div.style.padding = '14px 8px';
+      const mods = a.progreso.filter(p => p.comp === 1).length;
+      div.innerHTML = `
+        <span class="rank-num" style="font-size:18px;">${i<3?medals[i]:'#'+(i+1)}</span>
+        <div class="av" style="background:${a.color}22;width:42px;height:42px;font-size:20px;">${a.avatar}</div>
+        <div class="alumno-info">
+          <div class="alumno-name" style="font-size:15px;">${a.nombre}</div>
+          <div class="alumno-meta">${mods} módulos · ${a.racha}d racha · ${a.logros || 0} logros</div>
+        </div>
+        <div class="pts" style="font-size:16px;">${(a.puntos||0).toLocaleString()} pts</div>`;
+      cont.appendChild(div);
+    });
+  })();
+
+  // ═══════ VISTA: LOGROS (full) ═══════
+  (function renderLogrosFull() {
+    const cont = document.getElementById('logros-full');
+    if (!cont) return;
+    // Catálogo de logros posibles
+    const catalogo = [
+      { emoji:'👑', nombre:'Leyenda Financiera', desc:'Completar los 5 módulos', check: a => a.progreso.filter(p=>p.comp===1).length === 5 },
+      { emoji:'🏆', nombre:'Maestro del Dinero', desc:'3 o más módulos con puntaje perfecto', check: a => a.progreso.filter(p=>p.score===10).length >= 3 },
+      { emoji:'⚡', nombre:'Imparable',          desc:'Racha de 7 días o más',                check: a => a.racha >= 7 },
+      { emoji:'💯', nombre:'Centenario',         desc:'Acumular 100 puntos o más',            check: a => a.puntos >= 100 },
+      { emoji:'💰', nombre:'Perfecto M1',        desc:'10/10 en el Módulo 1',                 check: a => a.progreso[0]?.score === 10 },
+      { emoji:'🎯', nombre:'Precisión',          desc:'10/10 en al menos 1 módulo',           check: a => a.progreso.some(p=>p.score===10) },
+      { emoji:'🌟', nombre:'En Camino',          desc:'Completar al menos 1 módulo',          check: a => a.progreso.filter(p=>p.comp===1).length >= 1 },
+      { emoji:'🚀', nombre:'Despegue',           desc:'Completar 3 módulos',                  check: a => a.progreso.filter(p=>p.comp===1).length >= 3 },
+    ];
+    cont.innerHTML = '';
+    catalogo.forEach(logro => {
+      const ganadores = alumnos.filter(logro.check);
+      const card = document.createElement('div');
+      card.style.cssText = 'background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;';
+      card.innerHTML = `
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <div style="font-size:36px;">${logro.emoji}</div>
+          <div>
+            <div style="font-weight:700;font-size:14px;">${logro.nombre}</div>
+            <div style="color:var(--text-secondary);font-size:12px;">${logro.desc}</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--text-hint);margin-bottom:6px;">
+          ${ganadores.length} ${ganadores.length === 1 ? 'alumno lo obtuvo' : 'alumnos lo obtuvieron'}
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          ${ganadores.length
+            ? ganadores.map(g => `<span style="background:${g.color}22;color:var(--text-primary);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;">${g.avatar} ${g.nombre.split(' ')[0]}</span>`).join('')
+            : '<span style="color:var(--text-hint);font-size:12px;">Nadie todavía</span>'}
+        </div>
+      `;
+      cont.appendChild(card);
+    });
+  })();
+
+  // ═══════ VISTA: ACTIVIDAD (completa) ═══════
+  (function renderActividadCompleta() {
+    const cont = document.getElementById('actividad-completa');
+    if (!cont) return;
+    const lista = (usandoDemo ? DEMO.actividad : (dashData.actividad || [])).slice(0, 50);
+    cont.innerHTML = '';
+    if (!lista.length) {
+      cont.innerHTML = `<div style="padding:24px;text-align:center;color:var(--text-hint);">Sin actividad todavía</div>`;
+      return;
+    }
+    lista.forEach(a => {
+      const pct = Math.round((a.puntaje||0)/(a.total||10)*100);
+      const cls = pct>=80?'score-good':pct>=60?'score-mid':'score-low';
+      const fecha = a.fecha ? new Date(a.fecha) : null;
+      const fechaTxt = fecha ? fecha.toLocaleString('es-MX', {dateStyle:'short', timeStyle:'short'}) : '';
+      const div = document.createElement('div');
+      div.className = 'activity-row';
+      div.innerHTML = `
+        <div class="mod-badge" style="background:${a.color}22;">${a.icono}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="act-name">${a.avatar} ${a.alumno}</div>
+          <div class="act-mod">${a.modulo}${fechaTxt ? ' · ' + fechaTxt : ''}</div>
+        </div>
+        <span class="score-pill ${cls}">${a.puntaje}/${a.total}</span>`;
+      cont.appendChild(div);
+    });
+  })();
+
+  // ═══════ VISTA: CONFIG ═══════
+  (function renderConfig() {
+    const profNameEl = document.getElementById('conf-profesor-name');
+    if (profNameEl) profNameEl.textContent = nombreProfe;
+
+    const statsEl = document.getElementById('conf-stats');
+    if (statsEl) {
+      statsEl.textContent = usandoDemo
+        ? 'Sin datos reales (mostrando ejemplos). Cuando los alumnos jueguen, aparecerán aquí.'
+        : `${alumnos.length} alumno(s) · ${dashData.actividad?.length || 0} actividad(es) registrada(s).`;
+    }
+  })();
+
+  function resetearDatos() {
+    if (!confirm('¿Borrar TODO el progreso de los alumnos? Esta acción no se puede deshacer.')) return;
+    if (window.AprendoStorage) window.AprendoStorage.resetear();
+    location.reload();
+  }
+
+  function exportarDatos() {
+    const data = localStorage.getItem('apdinero_data') || '{}';
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `apdinero_export_${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
 </script>
 </body>
 </html>

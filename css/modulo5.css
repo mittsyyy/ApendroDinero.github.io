@@ -103,9 +103,13 @@ body {
 }
 
 .money-display-box img {
-  width: 170px;
-  height: 120px;
+  width: 220px;
+  height: 155px;
   object-fit: contain;
+  transition: transform 0.2s ease;
+}
+.money-display-box img:hover {
+  transform: scale(1.04);
 }
 
 .money-display-label {
@@ -612,8 +616,8 @@ body {
   }
 
   .money-display-box img {
-    width: 135px;
-    height: 100px;
+    width: 175px;
+    height: 125px;
   }
 
   .option-classify-btn {

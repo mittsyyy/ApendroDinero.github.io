@@ -212,6 +212,7 @@ function nextQuestion() {
   currentQ++;
 
   if (currentQ >= totalQ) {
+    if (window.AprendoStorage) AprendoStorage.guardarResultado(3, score, 10);
     window.location.href = `felicidades.html?score=${score}&module=3`;
     return;
   }

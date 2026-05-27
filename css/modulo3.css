@@ -99,13 +99,17 @@ body {
 }
 
 .money-item img {
-  width: 120px;
-  height: 80px;
+  width: 180px;
+  height: 125px;
   object-fit: contain;
   border-radius: 12px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
   background: white;
-  padding: 4px;
+  padding: 6px;
+  transition: transform 0.2s ease;
+}
+.money-item img:hover {
+  transform: scale(1.04);
 }
 
 .money-item .money-value {
@@ -605,8 +609,8 @@ body {
   }
 
   .money-item img {
-    width: 95px;
-    height: 68px;
+    width: 140px;
+    height: 100px;
   }
 
   .option-count-btn {

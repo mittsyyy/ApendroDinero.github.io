@@ -375,6 +375,7 @@ function nextQuestion() {
   currentQ++;
 
   if (currentQ >= totalQ) {
+    if (window.AprendoStorage) AprendoStorage.guardarResultado(2, score, 10);
     window.location.href = `felicidades.html?score=${score}&module=2`;
     return;
   }
@@ -395,6 +396,11 @@ function closeModal(id) {
 
 function toggleSetting(id) {
   document.getElementById(id).classList.toggle('on');
+  if (id === 'toggle-music') {
+    toggleMusica();
+  } else if (id === 'toggle-sound') {
+    toggleMute();
+  }
 }
 
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
@@ -431,28 +437,57 @@ document.addEventListener('DOMContentLoaded', () => {
       prepararVoces();
     };
   }
-
-  document.addEventListener('click', desbloquearAudio, { once: true });
-  document.addEventListener('touchstart', desbloquearAudio, { once: true });
 });
 
+// ══════════════════════════════════════════
+//   MÚSICA DE FONDO
+// ══════════════════════════════════════════
 let musica;
+let musicaIniciada = false;
+
+function iniciarMusicaSiHaceFalta() {
+  if (!musica || musicaIniciada) return;
+  if (localStorage.getItem('music_muted') === 'true') return;
+  musica.play()
+    .then(() => { musicaIniciada = true; })
+    .catch(() => { /* el usuario tiene que interactuar primero */ });
+}
+
+function toggleMusica() {
+  if (!musica) return;
+  if (musica.paused) {
+    localStorage.setItem('music_muted', 'false');
+    musica.play().then(() => { musicaIniciada = true; }).catch(() => {});
+  } else {
+    localStorage.setItem('music_muted', 'true');
+    musica.pause();
+  }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-  const musicMuted = localStorage.getItem('music_muted') === 'true';
-  if (musicMuted) return;
-
   musica = new Audio('../audio/musica.mp3');
   musica.loop = true;
   musica.volume = 0.2;
 
   const savedTime = parseFloat(localStorage.getItem('music_time') || '0');
-  musica.currentTime = savedTime;
+  if (!isNaN(savedTime)) musica.currentTime = savedTime;
 
-  document.body.addEventListener('click', () => {
-    musica.play().catch(() => {});
-  }, { once: true });
+  // Reflejar estado guardado en el toggle del modal
+  const toggleMusicEl = document.getElementById('toggle-music');
+  if (toggleMusicEl) {
+    if (localStorage.getItem('music_muted') === 'true') {
+      toggleMusicEl.classList.remove('on');
+    } else {
+      toggleMusicEl.classList.add('on');
+    }
+  }
 
+  // Cualquier gesto del usuario arranca la música
+  ['click', 'touchstart', 'keydown'].forEach(ev => {
+    document.addEventListener(ev, iniciarMusicaSiHaceFalta, { once: false });
+  });
+
+  // Guardar posición al salir
   window.addEventListener('beforeunload', () => {
     if (!musica) return;
     localStorage.setItem('music_time', String(musica.currentTime));

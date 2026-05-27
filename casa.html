@@ -7,6 +7,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script>
+    // Guardia de sesión: profesores van al dashboard, sin sesión → login
+    (function () {
+      const rol = localStorage.getItem('rolSesion');
+      if (rol === 'profesor') {
+        window.location.replace('dashboard.html');
+      } else if (!rol) {
+        window.location.replace('index.html');
+      }
+    })();
+  </script>
 </head>
 <body>
 
@@ -34,6 +45,7 @@
       
       <button class="icon-btn" id="mute-btn" onclick="toggleMute()"><i class="fa-solid fa-volume-xmark" style="color: rgb(255, 255, 255);"></i></button>
       <button class="icon-btn" onclick="openModal('settings-modal')"><i class="fa-solid fa-gear" style="color: rgb(255, 255, 255);"></i></button>
+      <button class="icon-btn" onclick="cerrarSesion()" title="Cerrar sesión"><i class="fa-solid fa-right-from-bracket" style="color: rgb(255, 255, 255);"></i></button>
     </div>
   </div>
 
@@ -203,6 +215,7 @@
 <!-- Toast -->
 <div id="toast"></div>
 
+<script src="js/storage.js"></script>
 <script src="js/app.js"></script>
 <audio id="bg-music" loop>
   <source src="audio/musica.mp3" type="audio/mpeg">
