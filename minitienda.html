@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mini Tienda — Aprendo Dinero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Baloo+2:wght@500;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --naranja-1:#FF9A56;
+    --naranja-2:#FF6B6B;
+    --morado:#8B5CF6;
+    --morado-oscuro:#6D28D9;
+    --crema:#FFF8F0;
+    --verde:#06D6A0;
+    --rojo:#EF476F;
+    --amarillo:#FFD166;
+    --madera:#C97A3D;
+    --madera-oscura:#9A5A2A;
+    --piso-1:#F3D9B1;
+    --piso-2:#E9C793;
+    --texto:#4A3B2A;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+  html,body{ height:100%; }
+  body{
+    margin:0;
+    font-family:'Nunito', sans-serif;
+    color:var(--texto);
+    background: radial-gradient(circle at top, #FFC26B 0%, var(--naranja-2) 60%, #FF7E9B 100%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:18px 12px 40px;
+    min-height:100vh;
+  }
+  h1,.precio,.rotulo{ font-family:'Fredoka One','Baloo 2',cursive; }
+
+  header{ text-align:center; margin-bottom:12px; }
+  header h1{
+    color:#fff;
+    font-size:clamp(1.6rem,5vw,2.3rem);
+    text-shadow:0 3px 0 rgba(109,40,217,0.35);
+    margin:0 0 4px;
+  }
+  header p{ color:#fff; font-weight:700; opacity:.95; margin:0; font-size:.95rem; }
+
+  /* FACHADA DE LA TIENDA */
+  .fachada{
+    width:100%;
+    max-width:760px;
+  }
+  .toldo{
+    height:34px;
+    border-radius:14px 14px 0 0;
+    background: repeating-linear-gradient(90deg, var(--morado) 0 26px, #A78BFA 26px 52px);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: inset 0 -4px 0 rgba(0,0,0,0.15);
+  }
+  .toldo span{
+    background:var(--crema);
+    color:var(--morado-oscuro);
+    padding:2px 18px;
+    border-radius:20px;
+    font-weight:800;
+    font-size:.85rem;
+  }
+
+  /* AREA DE JUEGO */
+  .juego-wrap{
+    position:relative;
+    border:6px solid var(--madera-oscura);
+    border-top:none;
+    border-radius:0 0 20px 20px;
+    overflow:hidden;
+    background:
+      repeating-conic-gradient(var(--piso-1) 0% 25%, var(--piso-2) 0% 50%) 0 0 / 48px 48px;
+    box-shadow:0 14px 30px rgba(109,40,217,0.28);
+    width:100%;
+    max-width:760px;
+    aspect-ratio: 16/10;
+    touch-action:none;
+  }
+  #escena{
+    position:absolute; inset:0;
+  }
+
+  .pared{
+    position:absolute; top:0; left:0; right:0; height:14%;
+    background: linear-gradient(180deg, #E9B872, #D9A25E);
+    border-bottom:4px solid var(--madera-oscura);
+  }
+
+  /* ANAQUELES */
+  .anaquel{
+    position:absolute;
+    width:96px;
+    text-align:center;
+    cursor:pointer;
+    user-select:none;
+  }
+  .anaquel .mesa{
+    background: linear-gradient(180deg, var(--madera), var(--madera-oscura));
+    border-radius:10px;
+    height:34px;
+    box-shadow:0 6px 0 rgba(0,0,0,0.18);
+    position:relative;
+    top:26px;
+  }
+  .anaquel .item-emoji{
+    font-size:2.1rem;
+    display:block;
+    filter: drop-shadow(0 4px 3px rgba(0,0,0,.2));
+    position:relative;
+    z-index:2;
+  }
+  .anaquel .etiqueta{
+    background:#fff;
+    color:var(--morado-oscuro);
+    border-radius:10px;
+    padding:2px 8px;
+    font-size:.8rem;
+    font-weight:800;
+    display:inline-block;
+    margin-top:2px;
+    box-shadow:0 2px 4px rgba(0,0,0,0.15);
+  }
+  .anaquel.cercano .mesa{ box-shadow:0 0 0 3px var(--verde), 0 6px 0 rgba(0,0,0,0.18); }
+  .anaquel .burbuja{
+    position:absolute;
+    top:-30px; left:50%; transform:translateX(-50%);
+    background:var(--verde); color:#fff;
+    font-size:.7rem; font-weight:800;
+    padding:4px 8px; border-radius:12px;
+    white-space:nowrap;
+    opacity:0; transition:opacity .12s ease;
+    pointer-events:none;
+  }
+  .anaquel.cercano .burbuja{ opacity:1; }
+  .anaquel.comprado::after{
+    content:'✓';
+    position:absolute; top:-6px; right:2px;
+    background:var(--verde); color:#fff;
+    width:20px;height:20px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:.75rem; font-weight:800;
+    z-index:3;
+  }
+
+  /* PERSONAJE */
+  #personaje{
+    position:absolute;
+    width:44px; height:52px;
+    transform:translate(-50%,-70%);
+    z-index:5;
+    pointer-events:none;
+  }
+  #personaje .cuerpo{
+    width:34px;height:34px;
+    border-radius:50%;
+    background: var(--amarillo);
+    border:3px solid #E8A93A;
+    margin:0 auto;
+    position:relative;
+    box-shadow:0 6px 6px rgba(0,0,0,0.18);
+  }
+  #personaje .cachete{
+    position:absolute; width:6px;height:5px; border-radius:50%;
+    background:#FF9AA2; top:20px;
+  }
+  #personaje .cachete.izq{ left:5px; }
+  #personaje .cachete.der{ right:5px; }
+  #personaje .ojo{
+    position:absolute; width:4px; height:4px; background:#4A3B2A; border-radius:50%; top:12px;
+  }
+  #personaje .ojo.izq{ left:10px; }
+  #personaje .ojo.der{ right:10px; }
+  #personaje .pies{
+    width:26px; height:10px;
+    background:var(--morado-oscuro);
+    border-radius:6px;
+    margin:2px auto 0;
+  }
+
+  /* CONTROLES TACTILES */
+  .controles{
+    display:grid;
+    grid-template-columns:56px 56px 56px;
+    grid-template-rows:56px 56px 56px;
+    gap:6px;
+    margin-top:16px;
+    user-select:none;
+  }
+  .controles button{
+    border:none;
+    border-radius:14px;
+    background:var(--morado);
+    color:#fff;
+    font-size:1.3rem;
+    box-shadow:0 4px 0 var(--morado-oscuro);
+    cursor:pointer;
+  }
+  .controles button:active{ transform:translateY(3px); box-shadow:none; }
+  .c-arriba{ grid-column:2; grid-row:1; }
+  .c-izq{ grid-column:1; grid-row:2; }
+  .c-der{ grid-column:3; grid-row:2; }
+  .c-abajo{ grid-column:2; grid-row:3; }
+  .c-centro{ grid-column:2; grid-row:2; background:transparent; box-shadow:none; }
+
+  .pista{
+    color:#fff;
+    font-weight:700;
+    margin-top:10px;
+    font-size:.85rem;
+    text-align:center;
+    opacity:.9;
+  }
+
+  /* MODAL DE COMPRA */
+  .fondo-modal{
+    position:fixed; inset:0;
+    background:rgba(74,59,42,0.55);
+    display:none;
+    align-items:center; justify-content:center;
+    padding:16px;
+    z-index:50;
+  }
+  .fondo-modal.abierto{ display:flex; }
+  .modal{
+    background:var(--crema);
+    border-radius:24px;
+    padding:22px 20px;
+    max-width:420px;
+    width:100%;
+    box-shadow:0 16px 40px rgba(0,0,0,0.3);
+  }
+  .modal h3{ margin:0 0 4px; color:var(--morado-oscuro); font-size:1.3rem; }
+  .modal .sub{ margin:0 0 14px; font-weight:700; color:var(--texto); }
+  .monedero-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(64px,1fr));
+    gap:8px;
+    margin-bottom:12px;
+  }
+  .moneda,.billete{
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fredoka One',cursive;
+    cursor:pointer;
+    font-size:.95rem;
+    user-select:none;
+  }
+  .moneda{
+    background:linear-gradient(160deg,#FFE8B0,var(--amarillo));
+    border:2px solid #E8B84B;
+    border-radius:50%;
+    aspect-ratio:1;
+    box-shadow:0 4px 0 #C98F2B;
+  }
+  .billete{
+    background:linear-gradient(160deg,#DFF7E9,#B9F0D2);
+    border:2px solid #4FBE85;
+    border-radius:8px;
+    aspect-ratio:2/1;
+    box-shadow:0 4px 0 #2F9C63;
+  }
+  .moneda:active,.billete:active{ transform:translateY(2px); box-shadow:none; }
+  .bandeja{
+    min-height:54px;
+    border:3px dashed #D9C8FF;
+    border-radius:14px;
+    padding:8px;
+    display:flex; flex-wrap:wrap; gap:6px; align-items:center;
+    background:#FBF8FF;
+    margin-bottom:10px;
+  }
+  .bandeja .vacio{ color:#B8A9D9; font-weight:700; margin:auto; font-size:.85rem; }
+  .ficha{
+    background:var(--morado); color:#fff;
+    font-family:'Fredoka One',cursive;
+    padding:5px 10px; border-radius:10px; font-size:.8rem; cursor:pointer;
+  }
+  .modal-resumen{
+    display:flex; justify-content:space-between; font-weight:800; margin-bottom:10px; font-size:.9rem;
+  }
+  .modal-botones{ display:flex; gap:8px; }
+  .modal-botones button{
+    flex:1;
+    font-family:'Baloo 2',cursive;
+    font-weight:700;
+    border:none;
+    border-radius:14px;
+    padding:11px;
+    font-size:.95rem;
+    cursor:pointer;
+    box-shadow:0 4px 0 rgba(0,0,0,0.15);
+  }
+  .modal-botones button:active{ transform:translateY(3px); box-shadow:none; }
+  .btn-cerrar{ background:#fff; color:var(--morado-oscuro); border:2px solid var(--morado) !important; }
+  .btn-pagar{ background:var(--verde); color:#fff; }
+  .mensaje-modal{
+    margin-top:10px; padding:10px 12px; border-radius:12px; font-weight:800; text-align:center;
+    display:none; font-size:.9rem;
+  }
+  .mensaje-modal.mostrar{ display:block; }
+  .mensaje-modal.correcto{ background:#DFF9EE; color:#0B8F65; }
+  .mensaje-modal.falta{ background:#FFF1D6; color:#B4740E; }
+  .mensaje-modal.sobra{ background:#FDE2E9; color:#C41E4E; }
+
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1> Mini Tienda</h1>
+  <p>Camina por la tienda y acércate a un anaquel para comprar</p>
+</header>
+
+<div class="fachada">
+  <div class="toldo"><span>ABIERTO </span></div>
+  <div class="juego-wrap" id="juegoWrap">
+    <div id="escena">
+      <div class="pared"></div>
+      <!-- anaqueles y personaje se insertan por JS -->
+    </div>
+  </div>
+</div>
+
+<div class="controles" id="controles">
+  <button class="c-arriba" data-dir="arriba">▲</button>
+  <button class="c-izq" data-dir="izquierda">◀</button>
+  <div class="c-centro"></div>
+  <button class="c-der" data-dir="derecha">▶</button>
+  <button class="c-abajo" data-dir="abajo">▼</button>
+</div>
+<p class="pista">También puedes usar las flechas del teclado o WASD</p>
+
+<!-- MODAL DE COMPRA -->
+<div class="fondo-modal" id="fondoModal">
+  <div class="modal">
+    <h3 id="modalNombre">Producto</h3>
+    <p class="sub">Precio: <span id="modalPrecio">$0</span></p>
+
+    <div class="monedero-grid" id="modalMonedero"></div>
+
+    <div class="bandeja" id="modalBandeja">
+      <span class="vacio">Toca monedas o billetes para pagar</span>
+    </div>
+
+    <div class="modal-resumen">
+      <span>Llevas: <span id="modalTotal">$0</span></span>
+    </div>
+
+    <div class="modal-botones">
+      <button class="btn-cerrar" id="btnCerrarModal">Cerrar</button>
+      <button class="btn-pagar" id="btnPagarModal">Pagar</button>
+    </div>
+
+    <div class="mensaje-modal" id="mensajeModal"></div>
+  </div>
+</div>
+
+<script>
+  // ---------- datos de ejemplo, fáciles de reemplazar ----------
+  const productos = [
+    { id:'paleta',  nombre:'Paleta',    emoji:'🍭', precio:8,   x:14,  y:32 },
+    { id:'globo',   nombre:'Globo',     emoji:'🎈', precio:15,  x:38,  y:24 },
+    { id:'libro',   nombre:'Cuento',    emoji:'📕', precio:35,  x:62,  y:32 },
+    { id:'pelota',  nombre:'Pelota',    emoji:'⚽', precio:50,  x:82,  y:24 },
+    { id:'mochila', nombre:'Mochila',   emoji:'🎒', precio:120, x:22,  y:74 },
+    { id:'bici',    nombre:'Bicicleta', emoji:'🚲', precio:350, x:70,  y:74 },
+  ];
+
+  const denominaciones = [
+    { valor:1,  tipo:'moneda',  etiqueta:'$1'  },
+    { valor:2,  tipo:'moneda',  etiqueta:'$2'  },
+    { valor:5,  tipo:'moneda',  etiqueta:'$5'  },
+    { valor:10, tipo:'moneda',  etiqueta:'$10' },
+    { valor:20, tipo:'billete', etiqueta:'$20' },
+    { valor:50, tipo:'billete', etiqueta:'$50' },
+    { valor:100,tipo:'billete', etiqueta:'$100'},
+  ];
+
+  const escena = document.getElementById('escena');
+  const juegoWrap = document.getElementById('juegoWrap');
+
+  // ---------- crear anaqueles ----------
+  const anaquelEls = {};
+  productos.forEach(p=>{
+    const el = document.createElement('div');
+    el.className = 'anaquel';
+    el.style.left = p.x + '%';
+    el.style.top = p.y + '%';
+    el.innerHTML = `
+      <div class="burbuja">✋ toca para comprar</div>
+      <span class="item-emoji">${p.emoji}</span>
+      <div class="mesa"></div>
+      <div class="etiqueta">$${p.precio}</div>
+    `;
+    el.addEventListener('click', ()=>{
+      if(el.classList.contains('cercano')) abrirModal(p);
+    });
+    escena.appendChild(el);
+    anaquelEls[p.id] = el;
+  });
+
+  // ---------- personaje ----------
+  const personaje = document.createElement('div');
+  personaje.id = 'personaje';
+  personaje.innerHTML = `
+    <div class="cuerpo">
+      <div class="ojo izq"></div><div class="ojo der"></div>
+      <div class="cachete izq"></div><div class="cachete der"></div>
+    </div>
+    <div class="pies"></div>
+  `;
+  escena.appendChild(personaje);
+
+  let pos = { x:50, y:55 }; // porcentaje dentro de la escena
+  const velocidad = 0.9; // % por frame
+  const teclas = { arriba:false, abajo:false, izquierda:false, derecha:false };
+
+  function actualizarPersonajeDOM(){
+    personaje.style.left = pos.x + '%';
+    personaje.style.top = pos.y + '%';
+  }
+  actualizarPersonajeDOM();
+
+  function distancia(ax,ay,bx,by){
+    return Math.hypot(ax-bx, ay-by);
+  }
+
+  function actualizarCercania(){
+    productos.forEach(p=>{
+      const d = distancia(pos.x, pos.y, p.x, p.y+6);
+      const el = anaquelEls[p.id];
+      if(d < 13){ el.classList.add('cercano'); }
+      else { el.classList.remove('cercano'); }
+    });
+  }
+
+  function loop(){
+    let dx = 0, dy = 0;
+    if(teclas.arriba) dy -= velocidad;
+    if(teclas.abajo) dy += velocidad;
+    if(teclas.izquierda) dx -= velocidad;
+    if(teclas.derecha) dx += velocidad;
+
+    if(dx !== 0 && dy !== 0){ dx *= 0.7; dy *= 0.7; }
+
+    pos.x = Math.min(96, Math.max(4, pos.x + dx));
+    pos.y = Math.min(94, Math.max(20, pos.y + dy));
+
+    actualizarPersonajeDOM();
+    actualizarCercania();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  // ---------- teclado ----------
+  const mapaTeclas = {
+    ArrowUp:'arriba', ArrowDown:'abajo', ArrowLeft:'izquierda', ArrowRight:'derecha',
+    w:'arriba', s:'abajo', a:'izquierda', d:'derecha',
+    W:'arriba', S:'abajo', A:'izquierda', D:'derecha'
+  };
+  window.addEventListener('keydown', e=>{
+    const dir = mapaTeclas[e.key];
+    if(dir){ teclas[dir] = true; e.preventDefault(); }
+    if(e.key === ' ' || e.key === 'Enter'){
+      const cercano = productos.find(p=> anaquelEls[p.id].classList.contains('cercano'));
+      if(cercano) abrirModal(cercano);
+    }
+  });
+  window.addEventListener('keyup', e=>{
+    const dir = mapaTeclas[e.key];
+    if(dir){ teclas[dir] = false; }
+  });
+
+  // ---------- controles táctiles ----------
+  document.querySelectorAll('#controles button[data-dir]').forEach(btn=>{
+    const dir = btn.dataset.dir;
+    const activar = (ev)=>{ ev.preventDefault(); teclas[dir]=true; };
+    const desactivar = (ev)=>{ ev.preventDefault(); teclas[dir]=false; };
+    btn.addEventListener('pointerdown', activar);
+    btn.addEventListener('pointerup', desactivar);
+    btn.addEventListener('pointerleave', desactivar);
+    btn.addEventListener('pointercancel', desactivar);
+  });
+
+  // ---------- modal de compra ----------
+  const fondoModal = document.getElementById('fondoModal');
+  const modalNombre = document.getElementById('modalNombre');
+  const modalPrecio = document.getElementById('modalPrecio');
+  const modalMonedero = document.getElementById('modalMonedero');
+  const modalBandeja = document.getElementById('modalBandeja');
+  const modalTotal = document.getElementById('modalTotal');
+  const mensajeModal = document.getElementById('mensajeModal');
+
+  let productoActivo = null;
+  let fichas = [];
+
+  denominaciones.forEach(d=>{
+    const el = document.createElement('div');
+    el.className = d.tipo;
+    el.textContent = d.etiqueta;
+    el.addEventListener('click', ()=>{ fichas.push(d.valor); renderBandeja(); });
+    modalMonedero.appendChild(el);
+  });
+
+  function abrirModal(producto){
+    productoActivo = producto;
+    fichas = [];
+    modalNombre.textContent = producto.nombre + ' ' + producto.emoji;
+    modalPrecio.textContent = '$' + producto.precio;
+    ocultarMensajeModal();
+    renderBandeja();
+    fondoModal.classList.add('abierto');
+  }
+
+  function cerrarModal(){
+    fondoModal.classList.remove('abierto');
+    productoActivo = null;
+  }
+
+  function renderBandeja(){
+    modalBandeja.innerHTML = '';
+    if(fichas.length === 0){
+      modalBandeja.innerHTML = '<span class="vacio">Toca monedas o billetes para pagar</span>';
+    } else {
+      fichas.forEach((v,i)=>{
+        const chip = document.createElement('div');
+        chip.className = 'ficha';
+        chip.textContent = '$' + v;
+        chip.addEventListener('click', ()=>{ fichas.splice(i,1); renderBandeja(); });
+        modalBandeja.appendChild(chip);
+      });
+    }
+    const total = fichas.reduce((a,b)=>a+b,0);
+    modalTotal.textContent = '$' + total;
+  }
+
+  function ocultarMensajeModal(){
+    mensajeModal.className = 'mensaje-modal';
+    mensajeModal.textContent = '';
+  }
+
+  function mostrarMensajeModal(texto, tipo){
+    mensajeModal.textContent = texto;
+    mensajeModal.className = 'mensaje-modal mostrar ' + tipo;
+  }
+
+  document.getElementById('btnCerrarModal').addEventListener('click', cerrarModal);
+
+  document.getElementById('btnPagarModal').addEventListener('click', ()=>{
+    if(!productoActivo) return;
+    const total = fichas.reduce((a,b)=>a+b,0);
+    const precio = productoActivo.precio;
+    if(total === precio){
+      mostrarMensajeModal(`¡Compraste ${productoActivo.nombre}! 🎉`, 'correcto');
+      anaquelEls[productoActivo.id].classList.add('comprado');
+      setTimeout(cerrarModal, 1200);
+    } else if(total < precio){
+      mostrarMensajeModal(`Te falta $${precio-total}`, 'falta');
+    } else {
+      mostrarMensajeModal(`Pagaste de más, tu cambio es $${total-precio}`, 'sobra');
+    }
+  });
+
+  fondoModal.addEventListener('click', (e)=>{
+    if(e.target === fondoModal) cerrarModal();
+  });
+</script>
+
+</body>
+</html>
