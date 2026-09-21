@@ -8,77 +8,135 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Baloo+2:wght@500;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --naranja-1:#FF9A56;
-    --naranja-2:#FF6B6B;
-    --morado:#8B5CF6;
-    --morado-oscuro:#6D28D9;
-    --crema:#FFF8F0;
+    --naranja-1:#48CAE4;
+    --naranja-2:#00B4D8;
+    --morado:#0077B6;
+    --morado-oscuro:#023E8A;
+    --crema:#F0FAFD;
     --verde:#06D6A0;
     --rojo:#EF476F;
     --amarillo:#FFD166;
-    --madera:#C97A3D;
-    --madera-oscura:#9A5A2A;
-    --piso-1:#F3D9B1;
-    --piso-2:#E9C793;
-    --texto:#4A3B2A;
+    --madera:#0096C7;
+    --madera-oscura:#023E8A;
+    --piso-1:#CAF0F8;
+    --piso-2:#ADE8F4;
+    --texto:#03045E;
   }
   *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
-  html,body{ height:100%; }
+  html,body{ height:100%; overscroll-behavior:none; }
   body{
     margin:0;
     font-family:'Nunito', sans-serif;
     color:var(--texto);
-    background: radial-gradient(circle at top, #FFC26B 0%, var(--naranja-2) 60%, #FF7E9B 100%);
+    background: radial-gradient(circle at top, #90E0EF 0%, var(--naranja-2) 60%, #03045E 100%);
     display:flex;
     flex-direction:column;
     align-items:center;
-    padding:18px 12px 40px;
-    min-height:100vh;
+    justify-content:center;
+    padding:clamp(6px,1.5vh,16px) 10px;
+    height:100vh;
+    height:100dvh;
+    overflow:hidden;
+    gap:clamp(4px,1vh,10px);
   }
   h1,.precio,.rotulo{ font-family:'Fredoka One','Baloo 2',cursive; }
 
-  header{ text-align:center; margin-bottom:12px; }
+  header{ text-align:center; flex:0 0 auto; }
   header h1{
     color:#fff;
-    font-size:clamp(1.6rem,5vw,2.3rem);
-    text-shadow:0 3px 0 rgba(109,40,217,0.35);
-    margin:0 0 4px;
+    font-size:clamp(1.1rem,3.6vh,2rem);
+    text-shadow:0 3px 0 rgba(2,62,138,0.35);
+    margin:0 0 2px;
   }
-  header p{ color:#fff; font-weight:700; opacity:.95; margin:0; font-size:.95rem; }
+  header p{ color:#fff; font-weight:700; opacity:.95; margin:0; font-size:clamp(.65rem,1.6vh,.9rem); }
+
+  /* FILA: juego grande + panel de controles al lado */
+  .zona-juego{
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:center;
+    gap:clamp(10px,2.5vw,28px);
+    width:100%;
+    flex:1 1 auto;
+    min-height:0;
+  }
+  .panel-controles{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:clamp(6px,1.5vh,14px);
+    flex:0 0 auto;
+  }
+
+  /* PANEL DE INVENTARIO */
+  .panel-inventario{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    flex:0 0 auto;
+    background:rgba(240,250,253,0.92);
+    border:3px solid var(--morado);
+    border-radius:16px;
+    padding:8px 8px 10px;
+    width:clamp(64px,8.5vw,104px);
+    max-height:min(400px, 70vh);
+    box-shadow:0 6px 0 rgba(0,0,0,0.12);
+  }
+  .panel-inventario h4{
+    margin:0;
+    font-family:'Fredoka One','Baloo 2',cursive;
+    font-size:clamp(.6rem,1.5vh,.8rem);
+    color:var(--morado-oscuro);
+    text-align:center;
+    line-height:1.15;
+  }
+  #listaInventario{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    width:100%;
+    align-items:center;
+    overflow-y:auto;
+    overflow-x:hidden;
+  }
+  .item-inventario{
+    font-size:clamp(1.2rem,2.8vh,1.7rem);
+    background:#fff;
+    border-radius:10px;
+    width:100%;
+    text-align:center;
+    padding:3px 0;
+    box-shadow:0 2px 0 rgba(0,0,0,0.1);
+    line-height:1;
+  }
+  .inventario-vacio{
+    font-size:clamp(.55rem,1.3vh,.72rem);
+    color:#8b5cf6aa;
+    text-align:center;
+    font-weight:700;
+    padding-top:4px;
+  }
 
   /* FACHADA DE LA TIENDA */
   .fachada{
     width:100%;
-    max-width:760px;
+    max-width:min(1200px, 78vw, 158vh);
+    flex:0 1 auto;
   }
-  .toldo{
-    height:34px;
-    border-radius:14px 14px 0 0;
-    background: repeating-linear-gradient(90deg, var(--morado) 0 26px, #A78BFA 26px 52px);
-    display:flex; align-items:center; justify-content:center;
-    box-shadow: inset 0 -4px 0 rgba(0,0,0,0.15);
-  }
-  .toldo span{
-    background:var(--crema);
-    color:var(--morado-oscuro);
-    padding:2px 18px;
-    border-radius:20px;
-    font-weight:800;
-    font-size:.85rem;
-  }
-
   /* AREA DE JUEGO */
   .juego-wrap{
     position:relative;
     border:6px solid var(--madera-oscura);
-    border-top:none;
-    border-radius:0 0 20px 20px;
+    border-radius:20px;
     overflow:hidden;
     background:
       repeating-conic-gradient(var(--piso-1) 0% 25%, var(--piso-2) 0% 50%) 0 0 / 48px 48px;
-    box-shadow:0 14px 30px rgba(109,40,217,0.28);
+    box-shadow:0 14px 30px rgba(2,62,138,0.28);
     width:100%;
-    max-width:760px;
+    max-width:min(1200px, 78vw, 158vh);
     aspect-ratio: 16/10;
     touch-action:none;
   }
@@ -88,28 +146,36 @@
 
   .pared{
     position:absolute; top:0; left:0; right:0; height:14%;
-    background: linear-gradient(180deg, #E9B872, #D9A25E);
+    background: linear-gradient(180deg, #90E0EF, #00B4D8);
     border-bottom:4px solid var(--madera-oscura);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .pared span{
+    font-family:'Fredoka One','Baloo 2',cursive;
+    color:#fff;
+    text-shadow:0 2px 0 rgba(2,62,138,0.55);
+    font-size:clamp(1.3rem,4vh,2.2rem);
+    letter-spacing:.5px;
   }
 
   /* ANAQUELES */
   .anaquel{
     position:absolute;
-    width:96px;
+    width:140px;
     text-align:center;
     cursor:pointer;
     user-select:none;
   }
   .anaquel .mesa{
     background: linear-gradient(180deg, var(--madera), var(--madera-oscura));
-    border-radius:10px;
-    height:34px;
-    box-shadow:0 6px 0 rgba(0,0,0,0.18);
+    border-radius:14px;
+    height:48px;
+    box-shadow:0 8px 0 rgba(0,0,0,0.18);
     position:relative;
-    top:26px;
+    top:36px;
   }
   .anaquel .item-emoji{
-    font-size:2.1rem;
+    font-size:3.2rem;
     display:block;
     filter: drop-shadow(0 4px 3px rgba(0,0,0,.2));
     position:relative;
@@ -118,21 +184,21 @@
   .anaquel .etiqueta{
     background:#fff;
     color:var(--morado-oscuro);
-    border-radius:10px;
-    padding:2px 8px;
-    font-size:.8rem;
+    border-radius:12px;
+    padding:4px 12px;
+    font-size:1.05rem;
     font-weight:800;
     display:inline-block;
-    margin-top:2px;
+    margin-top:4px;
     box-shadow:0 2px 4px rgba(0,0,0,0.15);
   }
   .anaquel.cercano .mesa{ box-shadow:0 0 0 3px var(--verde), 0 6px 0 rgba(0,0,0,0.18); }
   .anaquel .burbuja{
     position:absolute;
-    top:-30px; left:50%; transform:translateX(-50%);
+    top:-38px; left:50%; transform:translateX(-50%);
     background:var(--verde); color:#fff;
-    font-size:.7rem; font-weight:800;
-    padding:4px 8px; border-radius:12px;
+    font-size:.95rem; font-weight:800;
+    padding:5px 11px; border-radius:14px;
     white-space:nowrap;
     opacity:0; transition:opacity .12s ease;
     pointer-events:none;
@@ -140,56 +206,55 @@
   .anaquel.cercano .burbuja{ opacity:1; }
   .anaquel.comprado::after{
     content:'✓';
-    position:absolute; top:-6px; right:2px;
+    position:absolute; top:-8px; right:2px;
     background:var(--verde); color:#fff;
-    width:20px;height:20px;border-radius:50%;
+    width:28px;height:28px;border-radius:50%;
     display:flex;align-items:center;justify-content:center;
-    font-size:.75rem; font-weight:800;
+    font-size:1.05rem; font-weight:800;
     z-index:3;
   }
 
   /* PERSONAJE */
   #personaje{
     position:absolute;
-    width:44px; height:52px;
+    width:66px; height:78px;
     transform:translate(-50%,-70%);
     z-index:5;
     pointer-events:none;
   }
   #personaje .cuerpo{
-    width:34px;height:34px;
+    width:51px;height:51px;
     border-radius:50%;
     background: var(--amarillo);
-    border:3px solid #E8A93A;
+    border:4px solid #E8A93A;
     margin:0 auto;
     position:relative;
-    box-shadow:0 6px 6px rgba(0,0,0,0.18);
+    box-shadow:0 9px 9px rgba(0,0,0,0.18);
   }
   #personaje .cachete{
-    position:absolute; width:6px;height:5px; border-radius:50%;
-    background:#FF9AA2; top:20px;
+    position:absolute; width:9px;height:7px; border-radius:50%;
+    background:#FF9AA2; top:30px;
   }
-  #personaje .cachete.izq{ left:5px; }
-  #personaje .cachete.der{ right:5px; }
+  #personaje .cachete.izq{ left:7px; }
+  #personaje .cachete.der{ right:7px; }
   #personaje .ojo{
-    position:absolute; width:4px; height:4px; background:#4A3B2A; border-radius:50%; top:12px;
+    position:absolute; width:6px; height:6px; background:#4A3B2A; border-radius:50%; top:18px;
   }
-  #personaje .ojo.izq{ left:10px; }
-  #personaje .ojo.der{ right:10px; }
+  #personaje .ojo.izq{ left:15px; }
+  #personaje .ojo.der{ right:15px; }
   #personaje .pies{
-    width:26px; height:10px;
+    width:39px; height:15px;
     background:var(--morado-oscuro);
-    border-radius:6px;
-    margin:2px auto 0;
+    border-radius:8px;
+    margin:3px auto 0;
   }
 
   /* CONTROLES TACTILES */
   .controles{
     display:grid;
-    grid-template-columns:56px 56px 56px;
-    grid-template-rows:56px 56px 56px;
-    gap:6px;
-    margin-top:16px;
+    grid-template-columns:repeat(3, clamp(44px,7vh,68px));
+    grid-template-rows:repeat(3, clamp(44px,7vh,68px));
+    gap:clamp(4px,1vh,8px);
     user-select:none;
   }
   .controles button{
@@ -197,7 +262,7 @@
     border-radius:14px;
     background:var(--morado);
     color:#fff;
-    font-size:1.3rem;
+    font-size:clamp(1rem,2.5vh,1.5rem);
     box-shadow:0 4px 0 var(--morado-oscuro);
     cursor:pointer;
   }
@@ -211,10 +276,35 @@
   .pista{
     color:#fff;
     font-weight:700;
-    margin-top:10px;
-    font-size:.85rem;
+    margin-top:0;
+    font-size:clamp(.6rem,1.3vh,.8rem);
     text-align:center;
     opacity:.9;
+    flex:0 0 auto;
+    max-width:200px;
+  }
+
+  @media (max-width:620px), (orientation:portrait){
+    .zona-juego{ flex-direction:column; gap:clamp(6px,1vh,12px); }
+    .panel-controles{ flex-direction:row; }
+    .fachada{ max-width:min(1200px, 94vw, 62vh); }
+    .juego-wrap{ max-width:min(1200px, 94vw, 62vh) !important; }
+    .pista{ display:none; }
+    .panel-inventario{
+      order:-1;
+      flex-direction:row;
+      width:min(1200px, 94vw, 62vh);
+      max-height:56px;
+      padding:4px 8px;
+      gap:8px;
+    }
+    .panel-inventario h4{ white-space:nowrap; }
+    #listaInventario{
+      flex-direction:row;
+      overflow-x:auto;
+      overflow-y:hidden;
+    }
+    .item-inventario{ width:auto; padding:2px 6px; }
   }
 
   /* MODAL DE COMPRA */
@@ -312,29 +402,32 @@
 </head>
 <body>
 
-<header>
-  <h1> Mini Tienda</h1>
-  <p>Camina por la tienda y acércate a un anaquel para comprar</p>
-</header>
+<div class="zona-juego">
+  <div class="panel-inventario">
+    <h4>Inventario</h4>
+    <div id="listaInventario"></div>
+  </div>
 
-<div class="fachada">
-  <div class="toldo"><span>ABIERTO </span></div>
-  <div class="juego-wrap" id="juegoWrap">
-    <div id="escena">
-      <div class="pared"></div>
-      <!-- anaqueles y personaje se insertan por JS -->
+  <div class="fachada">
+    <div class="juego-wrap" id="juegoWrap">
+      <div id="escena">
+        <div class="pared"><span>Tiendita</span></div>
+        <!-- anaqueles y personaje se insertan por JS -->
+      </div>
     </div>
   </div>
-</div>
 
-<div class="controles" id="controles">
-  <button class="c-arriba" data-dir="arriba">▲</button>
-  <button class="c-izq" data-dir="izquierda">◀</button>
-  <div class="c-centro"></div>
-  <button class="c-der" data-dir="derecha">▶</button>
-  <button class="c-abajo" data-dir="abajo">▼</button>
+  <div class="panel-controles">
+    <div class="controles" id="controles">
+      <button class="c-arriba" data-dir="arriba">▲</button>
+      <button class="c-izq" data-dir="izquierda">◀</button>
+      <div class="c-centro"></div>
+      <button class="c-der" data-dir="derecha">▶</button>
+      <button class="c-abajo" data-dir="abajo">▼</button>
+    </div>
+    <p class="pista">También puedes usar las flechas del teclado o WASD</p>
+  </div>
 </div>
-<p class="pista">También puedes usar las flechas del teclado o WASD</p>
 
 <!-- MODAL DE COMPRA -->
 <div class="fondo-modal" id="fondoModal">
@@ -362,15 +455,48 @@
 </div>
 
 <script>
-  // ---------- datos de ejemplo, fáciles de reemplazar ----------
-  const productos = [
-    { id:'paleta',  nombre:'Paleta',    emoji:'🍭', precio:8,   x:14,  y:32 },
-    { id:'globo',   nombre:'Globo',     emoji:'🎈', precio:15,  x:38,  y:24 },
-    { id:'libro',   nombre:'Cuento',    emoji:'📕', precio:35,  x:62,  y:32 },
-    { id:'pelota',  nombre:'Pelota',    emoji:'⚽', precio:50,  x:82,  y:24 },
-    { id:'mochila', nombre:'Mochila',   emoji:'🎒', precio:120, x:22,  y:74 },
-    { id:'bici',    nombre:'Bicicleta', emoji:'🚲', precio:350, x:70,  y:74 },
+  // ---------- catálogo de productos posibles (se van rotando en los anaqueles) ----------
+  const catalogoProductos = [
+    { nombre:'Paleta',      emoji:'🍭', precio:8   },
+    { nombre:'Globo',       emoji:'🎈', precio:15  },
+    { nombre:'Cuento',      emoji:'📕', precio:35  },
+    { nombre:'Pelota',      emoji:'⚽', precio:50  },
+    { nombre:'Mochila',     emoji:'🎒', precio:120 },
+    { nombre:'Bicicleta',   emoji:'🚲', precio:350 },
+    { nombre:'Helado',      emoji:'🍦', precio:12  },
+    { nombre:'Yoyo',        emoji:'🪀', precio:20  },
+    { nombre:'Carrito',     emoji:'🚗', precio:45  },
+    { nombre:'Peluche',     emoji:'🧸', precio:75  },
+    { nombre:'Cometa',      emoji:'🪁', precio:28  },
+    { nombre:'Patines',     emoji:'🛼', precio:150 },
+    { nombre:'Reloj',       emoji:'⌚', precio:90  },
+    { nombre:'Lentes',      emoji:'🕶️', precio:40  },
+    { nombre:'Sombrero',    emoji:'👒', precio:33  },
+    { nombre:'Patineta',    emoji:'🛹', precio:200 },
+    { nombre:'Robot',       emoji:'🤖', precio:180 },
+    { nombre:'Dinosaurio',  emoji:'🦖', precio:65  },
   ];
+
+  // ---------- puestos fijos de los anaqueles (posición dentro de la escena) ----------
+  const posicionesAnaquel = [
+    { x:14, y:32 }, { x:38, y:24 }, { x:62, y:32 },
+    { x:82, y:24 }, { x:22, y:74 }, { x:70, y:74 },
+  ];
+
+  function elegirProductoAleatorio(evitarNombre){
+    let opciones = catalogoProductos;
+    if(evitarNombre){
+      opciones = catalogoProductos.filter(p=> p.nombre !== evitarNombre);
+    }
+    return { ...opciones[Math.floor(Math.random()*opciones.length)] };
+  }
+
+  // productos activos: uno por cada anaquel, con su posición fija y su producto actual
+  const productos = posicionesAnaquel.map((pos,i)=>({
+    id:'anaquel'+i,
+    ...pos,
+    ...elegirProductoAleatorio()
+  }));
 
   const denominaciones = [
     { valor:1,  tipo:'moneda',  etiqueta:'$1'  },
@@ -385,24 +511,47 @@
   const escena = document.getElementById('escena');
   const juegoWrap = document.getElementById('juegoWrap');
 
+  // ---------- inventario de cosas ya compradas ----------
+  const listaInventarioEl = document.getElementById('listaInventario');
+  const inventario = [];
+
+  function actualizarInventario(){
+    if(inventario.length === 0){
+      listaInventarioEl.innerHTML = '<span class="inventario-vacio">Aún no compras nada</span>';
+      return;
+    }
+    listaInventarioEl.innerHTML = inventario
+      .map(it => `<div class="item-inventario" title="${it.nombre}">${it.emoji}</div>`)
+      .join('');
+  }
+  actualizarInventario();
+
+
   // ---------- crear anaqueles ----------
   const anaquelEls = {};
-  productos.forEach(p=>{
-    const el = document.createElement('div');
-    el.className = 'anaquel';
-    el.style.left = p.x + '%';
-    el.style.top = p.y + '%';
+
+  function dibujarAnaquel(p){
+    const el = anaquelEls[p.id];
     el.innerHTML = `
       <div class="burbuja">✋ toca para comprar</div>
       <span class="item-emoji">${p.emoji}</span>
       <div class="mesa"></div>
       <div class="etiqueta">$${p.precio}</div>
     `;
+  }
+
+  productos.forEach(p=>{
+    const el = document.createElement('div');
+    el.className = 'anaquel';
+    el.style.left = p.x + '%';
+    el.style.top = p.y + '%';
     el.addEventListener('click', ()=>{
-      if(el.classList.contains('cercano')) abrirModal(p);
+      const actual = productos.find(x=>x.id === p.id);
+      if(el.classList.contains('cercano')) abrirModal(actual);
     });
     escena.appendChild(el);
     anaquelEls[p.id] = el;
+    dibujarAnaquel(p);
   });
 
   // ---------- personaje ----------
@@ -440,6 +589,21 @@
     });
   }
 
+  // ---------- colisión con los anaqueles (usa el tamaño y posición REAL de la mesita café) ----------
+  const margenColision = 4; // px de aire extra alrededor de la mesa
+
+  function chocaConAnaquel(pxX, pxY, escenaRect){
+    return productos.some(p=>{
+      const mesaEl = anaquelEls[p.id].querySelector('.mesa');
+      const r = mesaEl.getBoundingClientRect();
+      const left   = r.left   - escenaRect.left - margenColision;
+      const right  = r.right  - escenaRect.left + margenColision;
+      const top    = r.top    - escenaRect.top  - margenColision;
+      const bottom = r.bottom - escenaRect.top  + margenColision;
+      return pxX > left && pxX < right && pxY > top && pxY < bottom;
+    });
+  }
+
   function loop(){
     let dx = 0, dy = 0;
     if(teclas.arriba) dy -= velocidad;
@@ -449,8 +613,31 @@
 
     if(dx !== 0 && dy !== 0){ dx *= 0.7; dy *= 0.7; }
 
-    pos.x = Math.min(96, Math.max(4, pos.x + dx));
-    pos.y = Math.min(94, Math.max(20, pos.y + dy));
+    const nuevoX = Math.min(96, Math.max(4, pos.x + dx));
+    const nuevoY = Math.min(94, Math.max(20, pos.y + dy));
+
+    const escenaRect = escena.getBoundingClientRect();
+    const aPxX = pct => escenaRect.width  * pct / 100;
+    const aPxY = pct => escenaRect.height * pct / 100;
+
+    if(dx !== 0 && dy !== 0){
+      // movimiento diagonal: si el paso completo choca, se prueba
+      // deslizar solo por un eje para poder rodear el estante
+      if(!chocaConAnaquel(aPxX(nuevoX), aPxY(nuevoY), escenaRect)){
+        pos.x = nuevoX; pos.y = nuevoY;
+      } else if(!chocaConAnaquel(aPxX(nuevoX), aPxY(pos.y), escenaRect)){
+        pos.x = nuevoX;
+      } else if(!chocaConAnaquel(aPxX(pos.x), aPxY(nuevoY), escenaRect)){
+        pos.y = nuevoY;
+      }
+    } else {
+      if(dx !== 0 && !chocaConAnaquel(aPxX(nuevoX), aPxY(pos.y), escenaRect)){
+        pos.x = nuevoX;
+      }
+      if(dy !== 0 && !chocaConAnaquel(aPxX(pos.x), aPxY(nuevoY), escenaRect)){
+        pos.y = nuevoY;
+      }
+    }
 
     actualizarPersonajeDOM();
     actualizarCercania();
@@ -558,8 +745,22 @@
     const precio = productoActivo.precio;
     if(total === precio){
       mostrarMensajeModal(`¡Compraste ${productoActivo.nombre}! 🎉`, 'correcto');
-      anaquelEls[productoActivo.id].classList.add('comprado');
+      inventario.push({ nombre: productoActivo.nombre, emoji: productoActivo.emoji });
+      actualizarInventario();
+      const elAnaquel = anaquelEls[productoActivo.id];
+      elAnaquel.classList.add('comprado');
+      const idComprado = productoActivo.id;
+      const nombreComprado = productoActivo.nombre;
       setTimeout(cerrarModal, 1200);
+      setTimeout(()=>{
+        const slot = productos.find(x=> x.id === idComprado);
+        const nuevo = elegirProductoAleatorio(nombreComprado);
+        slot.nombre = nuevo.nombre;
+        slot.emoji = nuevo.emoji;
+        slot.precio = nuevo.precio;
+        dibujarAnaquel(slot);
+        elAnaquel.classList.remove('comprado');
+      }, 1200);
     } else if(total < precio){
       mostrarMensajeModal(`Te falta $${precio-total}`, 'falta');
     } else {
