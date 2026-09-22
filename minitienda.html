@@ -764,7 +764,9 @@
     } else if(total < precio){
       mostrarMensajeModal(`Te falta $${precio-total}`, 'falta');
     } else {
-      mostrarMensajeModal(`Pagaste de más, tu cambio es $${total-precio}`, 'sobra');
+      mostrarMensajeModal(`Pagaste de más. El precio exacto es $${precio}`, 'sobra');
+      fichas = [];
+      renderBandeja();
     }
   });
 
