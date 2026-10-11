@@ -21,8 +21,23 @@
 
 <!-- Header -->
 <div id="header">
-  <button class="icon-btn" aria-label="Módulos"><i class="fa-solid fa-grip" aria-hidden="true"></i></button>
-  <button class="icon-btn" aria-label="Ajustes"><i class="fa-solid fa-gear" aria-hidden="true"></i></button>
+  <a class="icon-btn" href="../casa.html" aria-label="Volver a la casa" title="Volver a la casa"><i class="fa-solid fa-house" aria-hidden="true"></i></a>
+  <button class="icon-btn" type="button" aria-label="Ajustes" title="Ajustes" onclick="abrirAjustes()"><i class="fa-solid fa-gear" aria-hidden="true"></i></button>
+</div>
+
+<div class="settings-overlay" id="settings-modal" onclick="cerrarAjustesDesdeFondo(event)">
+  <section class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <button class="settings-close" type="button" onclick="cerrarAjustes()" aria-label="Cerrar ajustes"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+    <h2 id="settings-title">Ajustes</h2>
+    <div class="setting-row">
+      <span><i class="fa-solid fa-volume-high" aria-hidden="true"></i> Sonido</span>
+      <button class="setting-toggle on" id="toggle-sound" type="button" role="switch" aria-label="Sonido" aria-checked="true" onclick="toggleSetting('toggle-sound')"></button>
+    </div>
+    <div class="setting-row">
+      <span><i class="fa-solid fa-music" aria-hidden="true"></i> Música</span>
+      <button class="setting-toggle on" id="toggle-music" type="button" role="switch" aria-label="Música" aria-checked="true" onclick="toggleSetting('toggle-music')"></button>
+    </div>
+  </section>
 </div>
 
 <!-- Estrella izquierda -->
@@ -80,6 +95,12 @@
 
 </div>
 
+<audio id="bg-music" loop preload="auto">
+  <source src="../audio/musica.mp3" type="audio/mpeg">
+</audio>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/db.js"></script>
 <script>
   // Recibe el puntaje y el módulo desde el query string
   const params = new URLSearchParams(window.location.search);
@@ -104,6 +125,92 @@
       window.location.href = `modulo${mod + 1}.html`;
     }
   }
+
+  const soundToggle = document.getElementById('toggle-sound');
+  const soundEnabled = localStorage.getItem('sound_muted') !== 'true';
+  soundToggle.classList.toggle('on', soundEnabled);
+  soundToggle.setAttribute('aria-checked', String(soundEnabled));
+
+  const musica = document.getElementById('bg-music');
+  const musicToggle = document.getElementById('toggle-music');
+  const musicEnabled = localStorage.getItem('music_muted') !== 'true';
+  musica.volume = 0.2;
+  musicToggle.classList.toggle('on', musicEnabled);
+  musicToggle.setAttribute('aria-checked', String(musicEnabled));
+
+  const savedMusicTime = Number(localStorage.getItem('music_time') || 0);
+  const restoreMusicTime = () => {
+    if (Number.isFinite(musica.duration)) {
+      musica.currentTime = Math.min(savedMusicTime, musica.duration);
+    }
+  };
+  if (musica.readyState >= HTMLMediaElement.HAVE_METADATA) restoreMusicTime();
+  else musica.addEventListener('loadedmetadata', restoreMusicTime, { once: true });
+
+  function iniciarMusica() {
+    if (localStorage.getItem('music_muted') === 'true') return;
+    musica.play().catch(() => {});
+  }
+
+  function guardarTiempoMusica() {
+    localStorage.setItem('music_time', String(musica.currentTime));
+  }
+
+  function iniciarMusicaEnGesto(evento) {
+    if (evento.target.closest('#toggle-music')) return;
+    iniciarMusica();
+  }
+
+  iniciarMusica();
+  document.addEventListener('pointerdown', iniciarMusicaEnGesto);
+  document.addEventListener('keydown', iniciarMusicaEnGesto);
+  musica.addEventListener('timeupdate', guardarTiempoMusica);
+  window.addEventListener('pagehide', guardarTiempoMusica);
+
+  function abrirAjustes() {
+    document.getElementById('settings-modal').classList.add('open');
+  }
+
+  function cerrarAjustes() {
+    document.getElementById('settings-modal').classList.remove('open');
+  }
+
+  function cerrarAjustesDesdeFondo(evento) {
+    if (evento.target.id === 'settings-modal') cerrarAjustes();
+  }
+
+  function toggleSetting(id) {
+    const control = document.getElementById(id);
+    const enabled = !control.classList.contains('on');
+    control.classList.toggle('on', enabled);
+    control.setAttribute('aria-checked', String(enabled));
+    const sonidoActivado = id === 'toggle-sound'
+      ? enabled
+      : soundToggle.classList.contains('on');
+    const musicaActivada = id === 'toggle-music'
+      ? enabled
+      : musicToggle.classList.contains('on');
+
+    localStorage.setItem('sound_muted', String(!sonidoActivado));
+    localStorage.setItem('music_muted', String(!musicaActivada));
+    if (id === 'toggle-music') {
+      if (musicaActivada) iniciarMusica();
+      else {
+        guardarTiempoMusica();
+        musica.pause();
+      }
+    }
+
+    if (window.DB) {
+      window.DB.obtenerJugador()
+        .then(() => window.DB.guardarAjustes(sonidoActivado, musicaActivada))
+        .catch(() => {});
+    }
+  }
+
+  document.addEventListener('keydown', evento => {
+    if (evento.key === 'Escape') cerrarAjustes();
+  });
 
   // Confetti
   const colores = ['#FFD700','#FF6B6B','#4ECDC4','#45B7D1','#96CEB4','#FFEAA7','#DDA0DD'];

@@ -90,6 +90,7 @@ function sonidoMenu(seccion) {
 
 // Función de voz
 function hablar(texto) {
+    if (localStorage.getItem('sound_muted') === 'true') return;
     const voz = new SpeechSynthesisUtterance(texto);
     voz.lang = 'es-MX';
     speechSynthesis.speak(voz);

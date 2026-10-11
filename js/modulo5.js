@@ -21,7 +21,7 @@ let score = 0;
 let currentQ = 0;
 const totalQ = 10;
 let answered = false;
-let muted = false;
+let muted = localStorage.getItem('sound_muted') === 'true';
 let currentQuestion = null;
 
 // ══════════════════════════════════════════
@@ -233,6 +233,7 @@ function escucharPregunta() {
 
 function toggleMute() {
   muted = !muted;
+  localStorage.setItem('sound_muted', String(muted));
 
   const btn = document.getElementById('mute-btn');
   if (btn) {
@@ -331,6 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
   musica = new Audio('../audio/musica.mp3');
   musica.loop = true;
   musica.volume = 0.2;
+  document.getElementById('toggle-sound')?.classList.toggle('on', !muted);
 
   const savedTime = parseFloat(localStorage.getItem('music_time') || '0');
   musica.currentTime = savedTime;
