@@ -17,15 +17,18 @@ async function guardarNombre() {
     localStorage.setItem("nombreJugador", nombre);
 
     // Guardar en Supabase
-    try {
-        await DB.registrarJugador(nombre, edad);
-    } catch (e) {
-        console.error("No se pudo guardar en Supabase:", e);
-    }
-
-    // Redireccionar
-    window.location.href = "casa.html";
+ // Guardar en Supabase (sin bloquear el juego)
+try {
+    await Promise.race([
+        DB.registrarJugador(nombre, edad),
+        new Promise((_, rechazar) => setTimeout(() => rechazar(new Error("Tiempo agotado")), 3000))
+    ]);
+} catch (e) {
+    console.error("No se pudo guardar en Supabase:", e);
 }
+
+// Redireccionar
+window.location.href = "casa.html";
 
 // Ir al nivel
 function irNivel(ruta){
