@@ -39,7 +39,6 @@
       color: var(--text-primary);
       font-size: 14px;
       line-height: 1.5;
-      display: flex;
       min-height: 100vh;
     }
 
@@ -306,8 +305,21 @@
     }
     @media (max-width:640px) {
       :root { --sb-width:var(--sb-width-col); }
+      .sidebar { width:var(--sb-width-col); }
+      .sidebar .sb-logo { justify-content:center; padding:20px 0 16px; }
+      .sidebar .sb-logo-text,
+      .sidebar .sb-section,
+      .sidebar .sb-item-text,
+      .sidebar .sb-item-badge,
+      .sidebar .sb-profile-info { display:none; }
+      .sidebar .sb-item { justify-content:center; padding:10px 0; }
+      .sidebar .sb-profile { justify-content:center; padding:14px 0; }
+      .sb-toggle { display:none; }
+      .metrics { grid-template-columns:1fr; }
       .content { padding:16px 16px 40px; }
-      .topbar  { padding:0 16px; }
+      .topbar  { min-height:58px; height:auto; padding:10px 16px; flex-wrap:wrap; gap:8px; }
+      .topbar-right { width:100%; }
+      .topbar-btn { flex:1; justify-content:center; padding:6px 8px; }
       .prog-grid { grid-template-columns:repeat(2,1fr); }
     }
   </style>
