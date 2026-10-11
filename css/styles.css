@@ -669,20 +669,27 @@ body {
   align-items: center;
   justify-content: center;
   margin-bottom: 18px;
-  min-height: 130px;
+  min-height: 200px;
 }
 
 .money-img {
-  max-width: 280px;
-  max-height: 140px;
+  max-width: 380px;
+  max-height: 260px;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
   transition: transform 0.3s;
   object-fit: contain;
 }
 
-.money-svg      { width: 240px; height: 130px; }
-.money-coin-svg { width: 130px; height: 130px; }
+.money-svg      { width: 320px; height: 180px; }
+.money-coin-svg { width: 180px; height: 180px; }
+
+@media (max-width: 700px) {
+  .money-img-wrap { min-height: 170px; }
+  .money-img { max-width: 88vw; max-height: 220px; }
+  .money-svg { width: min(300px, 78vw); height: auto; }
+  .money-coin-svg { width: 160px; height: 160px; }
+}
 
 /* ===== PREGUNTA ===== */
 .question-text {

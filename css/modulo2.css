@@ -36,6 +36,7 @@
       background: var(--white-card);
       border-radius: 30px;
       padding: 22px 28px 26px;
+      width: min(96vw, 800px);
       max-width: 800px;
       max-height: 800px;
       box-shadow: 0 12px 40px rgba(0,0,0,0.13);
@@ -76,8 +77,8 @@
     }
 
     .money-box img {
-      max-width: 220px;
-      max-height: 150px;
+      max-width: 300px;
+      max-height: 240px;
       width: 100%;
       object-fit: contain;
       border-radius: 12px;
@@ -86,6 +87,21 @@
     }
     .money-box img:hover {
       transform: scale(1.03);
+    }
+
+    @media (max-width: 700px) {
+      body { overflow: auto; }
+      #game-wrapper {
+        height: auto;
+        min-height: 100vh;
+        justify-content: flex-start;
+        padding: 78px 12px 24px;
+      }
+      .compare-card { width: min(100%, 520px); padding: 20px 16px 24px; }
+      .compare-area { flex-direction: column; gap: 10px; margin-bottom: 18px; }
+      .money-box { flex: none; width: 100%; }
+      .money-box img { max-width: min(320px, 82vw); max-height: 190px; }
+      .vs-circle { width: 40px; height: 40px; }
     }
 
     .money-label {
