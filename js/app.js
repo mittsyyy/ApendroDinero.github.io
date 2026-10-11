@@ -74,6 +74,11 @@ function startModule() {
   window.location.href = `modulos/modulo${moduloActual}.html`;
 }
 
+function cerrarSesion() {
+  localStorage.removeItem('rolSesion');
+  window.location.replace('index.html');
+}
+
 // ── Perfil / Nombre ──────────────────
 async function saveName() {
   const n = document.getElementById('name-input').value.trim() || 'Player';
