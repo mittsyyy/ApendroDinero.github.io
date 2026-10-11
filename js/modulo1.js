@@ -74,26 +74,35 @@ const questions = [
 ];
 
 // =============================================
+//   SUPABASE (si db.js no cargó, el juego sigue funcionando)
+// =============================================
+const NUM_MODULO = 1;
+const DBm = window.DB || {
+  respuesta:    async () => {},
+  avanceModulo: async () => {}
+};
+
+// =============================================
 //   MUTE
 // =============================================
-let muted         = localStorage.getItem('sound_muted') === 'true';
+let muted         = false;
 let audioDesbloqueado = false; // ← los navegadores bloquean audio sin interacción
 
 function toggleMute() {
   muted = !muted;
-  localStorage.setItem('sound_muted', String(muted));
-  const soundToggle = document.getElementById('toggle-sound');
-  if (soundToggle) soundToggle.classList.toggle('on', !muted);
+  const btn = document.getElementById('mute-btn');
+  if (!btn) return;
+  btn.innerHTML   = muted
+    ? '<i class="fa-solid fa-volume-xmark"></i>'
+    : '<i class="fa-solid fa-volume-high"></i>';
+  btn.style.color = 'white';
   if (muted) window.speechSynthesis.cancel();
   showToast(muted ? 'Sonido desactivado' : 'Sonido activado');
 }
 
+// Interruptores del modal de Ajustes
 function toggleSetting(id) {
-  if (id === 'toggle-sound') {
-    toggleMute();
-  } else if (id === 'toggle-music') {
-    toggleMusica();
-  }
+  document.getElementById(id).classList.toggle('on');
 }
 
 // =============================================
@@ -228,6 +237,11 @@ let answered        = false;
 let usedIndices     = [];
 let currentQuestion = null;
 
+// Para Supabase
+let errores           = 0;                    // equivocaciones (definen las estrellas)
+let inicioPregunta    = Date.now();           // para medir cuánto tarda en responder
+let guardadoPendiente = Promise.resolve();    // el último guardado de progreso
+
 // =============================================
 //   LÓGICA DEL JUEGO
 // =============================================
@@ -246,6 +260,7 @@ function shuffle(arr) {
 function loadQuestion() {
   answered        = false;
   currentQuestion = getRandomQuestion();
+  inicioPregunta  = Date.now();
 
   document.getElementById('qCounter').textContent     = `Pregunta ${currentQ + 1} de ${totalQ}`;
   document.getElementById('progressFill').style.width = `${(currentQ / totalQ) * 100}%`;
@@ -282,16 +297,27 @@ function selectOption(btn, value) {
     }
   });
 
+  // ── Supabase: registrar el intento ──
+  const segundos  = (Date.now() - inicioPregunta) / 1000;
+  const actividad = (currentQuestion.type === 'bill' ? 'billete_' : 'moneda_') + currentQuestion.value;
+  DBm.respuesta(NUM_MODULO, actividad, isCorrect, segundos);
+
   if (isCorrect) {
     score++;
     document.getElementById('scoreDisplay').textContent = score;
     mostrarMensaje(mensajeAleatorio(mensajesCorrecto), '#28a745');
+
+    // ── Supabase: guardar el avance ──
+    guardadoPendiente = DBm.avanceModulo(NUM_MODULO, score, totalQ, errores);
+
     setTimeout(nextQuestion, 1200);
   } else {
+    errores++;
     btn.classList.add('wrong');
     mostrarMensaje(mensajeAleatorio(mensajesError), '#355cdc');
     setTimeout(() => {
       answered = false;
+      inicioPregunta = Date.now();
       allBtns.forEach(b => {
         b.disabled = false;
         b.classList.remove('correct', 'wrong');
@@ -303,11 +329,15 @@ function selectOption(btn, value) {
 // =============================================
 //   NEXT QUESTION
 // =============================================
-function nextQuestion() {
+async function nextQuestion() {
   currentQ++;
   if (currentQ >= totalQ) {
-    if (window.AprendoStorage) AprendoStorage.guardarResultado(1, score, 10);
-    window.location.href = `felicidades.html?score=${score}&module=1`;
+    // Espera (máximo 3 segundos) a que se guarde el progreso antes de salir
+    await Promise.race([
+      guardadoPendiente,
+      new Promise(resolve => setTimeout(resolve, 3000))
+    ]);
+    window.location.href = `felicidades.html?score=${score}`;
     return;
   }
   loadQuestion();
@@ -353,43 +383,10 @@ function showToast(msg) {
 //   INIT
 // =============================================
 document.addEventListener('DOMContentLoaded', () => {
-  const musica = new Audio('../audio/musica.mp3');
-  musica.loop = true;
-  musica.volume = 0.2;
-
-  const tiempoGuardado = parseFloat(localStorage.getItem('music_time') || '0');
-  if (Number.isFinite(tiempoGuardado)) musica.currentTime = tiempoGuardado;
-
-  function reproducirMusica() {
-    if (localStorage.getItem('music_muted') === 'true') return;
-    musica.play().catch(() => {});
+  const btn = document.getElementById('mute-btn');
+  if (btn) {
+    btn.innerHTML   = '<i class="fa-solid fa-volume-high"></i>';
+    btn.style.color = 'white';
   }
-
-  window.toggleMusica = function () {
-    if (musica.paused) {
-      localStorage.setItem('music_muted', 'false');
-      musica.play().catch(() => {});
-    } else {
-      localStorage.setItem('music_muted', 'true');
-      musica.pause();
-    }
-    const musicToggle = document.getElementById('toggle-music');
-    if (musicToggle) musicToggle.classList.toggle('on', !musica.paused);
-  };
-
-  const musicToggle = document.getElementById('toggle-music');
-  if (musicToggle && localStorage.getItem('music_muted') === 'true') {
-    musicToggle.classList.remove('on');
-  }
-
-  ['click', 'touchstart', 'keydown'].forEach(eventName => {
-    document.addEventListener(eventName, reproducirMusica);
-  });
-  window.addEventListener('beforeunload', () => {
-    localStorage.setItem('music_time', String(musica.currentTime));
-  });
-
-  const soundToggle = document.getElementById('toggle-sound');
-  if (soundToggle) soundToggle.classList.toggle('on', !muted);
   loadQuestion();
 });

@@ -28,6 +28,19 @@ let muted = false;
 let currentQuestion = null;
 
 // ══════════════════════════════════════════
+//   SUPABASE (si db.js no cargó, el juego sigue funcionando)
+// ══════════════════════════════════════════
+const NUM_MODULO = 4;
+const DBm = window.DB || {
+  respuesta:    async () => {},
+  avanceModulo: async () => {}
+};
+
+let errores           = 0;                  // equivocaciones (definen las estrellas)
+let inicioPregunta    = Date.now();         // para medir cuánto tarda en responder
+let guardadoPendiente = Promise.resolve();  // el último guardado de progreso
+
+// ══════════════════════════════════════════
 //   MENSAJES
 // ══════════════════════════════════════════
 const mensajesCorrecto = [
@@ -140,7 +153,8 @@ function buildQuestion() {
     options: dataPago.opciones,
     correctLabel: dataPago.correcta,
     promptHTML: dataPago.texto,
-    speakText: `${dataPago.texto} ${producto.nombre}. Cuesta ${producto.precio} pesos.`
+    speakText: `${dataPago.texto} ${producto.nombre}. Cuesta ${producto.precio} pesos.`,
+    actividad: `${currentQ < 4 ? 'pago_exacto' : 'pago_posible'}_${producto.nombre.toLowerCase()}_${producto.precio}`
   };
 }
 
@@ -150,6 +164,7 @@ function buildQuestion() {
 function loadQuestion() {
   answered = false;
   buildQuestion();
+  inicioPregunta = Date.now();
 
   document.getElementById('qCounter').textContent = `Pregunta ${currentQ + 1} de ${totalQ}`;
   document.getElementById('progressFill').style.width = `${(currentQ / totalQ) * 100}%`;
@@ -193,17 +208,27 @@ function selectOption(btn, value) {
     }
   });
 
+  // ── Supabase: registrar el intento ──
+  const segundos = (Date.now() - inicioPregunta) / 1000;
+  DBm.respuesta(NUM_MODULO, currentQuestion.actividad, isCorrect, segundos);
+
   if (isCorrect) {
     score++;
     document.getElementById('scoreDisplay').textContent = score;
     mostrarMensaje(mensajeAleatorio(mensajesCorrecto), '#28a745');
+
+    // ── Supabase: guardar el avance ──
+    guardadoPendiente = DBm.avanceModulo(NUM_MODULO, score, totalQ, errores);
+
     setTimeout(nextQuestion, 1400);
   } else {
+    errores++;
     btn.classList.add('wrong');
     mostrarMensaje(mensajeAleatorio(mensajesError), '#355cdc');
 
     setTimeout(() => {
       answered = false;
+      inicioPregunta = Date.now();
       allBtns.forEach(b => {
         b.disabled = false;
         b.classList.remove('correct', 'wrong');
@@ -212,11 +237,16 @@ function selectOption(btn, value) {
   }
 }
 
-function nextQuestion() {
+async function nextQuestion() {
   currentQ++;
 
   if (currentQ >= totalQ) {
     if (window.AprendoStorage) AprendoStorage.guardarResultado(4, score, 10);
+    // Espera (máximo 3 segundos) a que se guarde el progreso antes de salir
+    await Promise.race([
+      guardadoPendiente,
+      new Promise(resolve => setTimeout(resolve, 3000))
+    ]);
     window.location.href = `felicidades.html?score=${score}&module=4`;
     return;
   }
