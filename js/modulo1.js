@@ -76,19 +76,24 @@ const questions = [
 // =============================================
 //   MUTE
 // =============================================
-let muted         = false;
+let muted         = localStorage.getItem('sound_muted') === 'true';
 let audioDesbloqueado = false; // ← los navegadores bloquean audio sin interacción
 
 function toggleMute() {
   muted = !muted;
-  const btn = document.getElementById('mute-btn');
-  if (!btn) return;
-  btn.innerHTML   = muted
-    ? '<i class="fa-solid fa-volume-xmark"></i>'
-    : '<i class="fa-solid fa-volume-high"></i>';
-  btn.style.color = 'white';
+  localStorage.setItem('sound_muted', String(muted));
+  const soundToggle = document.getElementById('toggle-sound');
+  if (soundToggle) soundToggle.classList.toggle('on', !muted);
   if (muted) window.speechSynthesis.cancel();
   showToast(muted ? 'Sonido desactivado' : 'Sonido activado');
+}
+
+function toggleSetting(id) {
+  if (id === 'toggle-sound') {
+    toggleMute();
+  } else if (id === 'toggle-music') {
+    toggleMusica();
+  }
 }
 
 // =============================================
@@ -348,10 +353,43 @@ function showToast(msg) {
 //   INIT
 // =============================================
 document.addEventListener('DOMContentLoaded', () => {
-  const btn = document.getElementById('mute-btn');
-  if (btn) {
-    btn.innerHTML   = '<i class="fa-solid fa-volume-high"></i>';
-    btn.style.color = 'white';
+  const musica = new Audio('../audio/musica.mp3');
+  musica.loop = true;
+  musica.volume = 0.2;
+
+  const tiempoGuardado = parseFloat(localStorage.getItem('music_time') || '0');
+  if (Number.isFinite(tiempoGuardado)) musica.currentTime = tiempoGuardado;
+
+  function reproducirMusica() {
+    if (localStorage.getItem('music_muted') === 'true') return;
+    musica.play().catch(() => {});
   }
+
+  window.toggleMusica = function () {
+    if (musica.paused) {
+      localStorage.setItem('music_muted', 'false');
+      musica.play().catch(() => {});
+    } else {
+      localStorage.setItem('music_muted', 'true');
+      musica.pause();
+    }
+    const musicToggle = document.getElementById('toggle-music');
+    if (musicToggle) musicToggle.classList.toggle('on', !musica.paused);
+  };
+
+  const musicToggle = document.getElementById('toggle-music');
+  if (musicToggle && localStorage.getItem('music_muted') === 'true') {
+    musicToggle.classList.remove('on');
+  }
+
+  ['click', 'touchstart', 'keydown'].forEach(eventName => {
+    document.addEventListener(eventName, reproducirMusica);
+  });
+  window.addEventListener('beforeunload', () => {
+    localStorage.setItem('music_time', String(musica.currentTime));
+  });
+
+  const soundToggle = document.getElementById('toggle-sound');
+  if (soundToggle) soundToggle.classList.toggle('on', !muted);
   loadQuestion();
 });
