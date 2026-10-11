@@ -52,6 +52,16 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
 });
 
 const backgroundMusic = document.getElementById('bg-music');
+const savedMusicTime = Number(localStorage.getItem('music_time') || 0);
+if (backgroundMusic && Number.isFinite(savedMusicTime)) {
+  const restoreMusicTime = () => {
+    if (Number.isFinite(backgroundMusic.duration)) {
+      backgroundMusic.currentTime = Math.min(savedMusicTime, backgroundMusic.duration);
+    }
+  };
+  if (backgroundMusic.readyState >= HTMLMediaElement.HAVE_METADATA) restoreMusicTime();
+  else backgroundMusic.addEventListener('loadedmetadata', restoreMusicTime, { once: true });
+}
 
 function reproducirMusica() {
   const toggle = document.getElementById('toggle-music');
@@ -66,8 +76,15 @@ function empezarExperiencia() {
   reproducirMusica();
 }
 
-document.addEventListener('pointerdown', reproducirMusica, { once: true });
-document.addEventListener('keydown', reproducirMusica, { once: true });
+function reproducirMusicaEnPrimerGesto(evento) {
+  if (evento.target.closest('#toggle-music')) return;
+  reproducirMusica();
+  document.removeEventListener('pointerdown', reproducirMusicaEnPrimerGesto);
+  document.removeEventListener('keydown', reproducirMusicaEnPrimerGesto);
+}
+
+document.addEventListener('pointerdown', reproducirMusicaEnPrimerGesto);
+document.addEventListener('keydown', reproducirMusicaEnPrimerGesto);
 document.addEventListener('DOMContentLoaded', reproducirMusica);
 backgroundMusic?.addEventListener('timeupdate', () => {
   localStorage.setItem('music_time', String(backgroundMusic.currentTime));

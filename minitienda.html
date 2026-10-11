@@ -42,6 +42,37 @@
   }
   h1,.precio,.rotulo{ font-family:'Fredoka One','Baloo 2',cursive; }
 
+  .barra-tienda{
+    position:fixed;
+    top:10px;
+    left:12px;
+    right:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    z-index:40;
+    pointer-events:none;
+  }
+  .tienda-nav-button{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    min-height:42px;
+    padding:8px 14px;
+    border:2px solid var(--morado-oscuro);
+    border-radius:14px;
+    background:rgba(255,255,255,.96);
+    color:var(--morado-oscuro);
+    font:700 .9rem 'Nunito',sans-serif;
+    text-decoration:none;
+    box-shadow:0 4px 0 rgba(2,62,138,.28);
+    cursor:pointer;
+    pointer-events:auto;
+  }
+  .tienda-nav-button i{ font-size:1rem; }
+  .tienda-nav-button:active{ transform:translateY(2px); box-shadow:0 2px 0 rgba(2,62,138,.28); }
+
   header{ text-align:center; flex:0 0 auto; }
   header h1{
     color:#fff;
@@ -403,6 +434,16 @@
 </head>
 <body>
 
+<nav class="barra-tienda" aria-label="Navegación de la tiendita">
+  <a class="tienda-nav-button" href="casa.html" aria-label="Volver a la casa">
+    <i class="fa-solid fa-house" aria-hidden="true"></i><span>Casa</span>
+  </a>
+  <button class="tienda-nav-button" id="music-toggle" type="button" aria-pressed="true">
+    <i class="fa-solid fa-volume-high" id="music-toggle-icon" aria-hidden="true"></i>
+    <span id="music-toggle-label">Música activada</span>
+  </button>
+</nav>
+
 <div class="zona-juego">
   <div class="panel-inventario">
     <h4>Inventario</h4>
@@ -455,7 +496,72 @@
   </div>
 </div>
 
+<audio id="bg-music" loop preload="auto">
+  <source src="audio/musica.mp3" type="audio/mpeg">
+</audio>
+
 <script>
+  const musicaFondo = document.getElementById('bg-music');
+  const botonMusica = document.getElementById('music-toggle');
+  const iconoMusica = document.getElementById('music-toggle-icon');
+  const etiquetaMusica = document.getElementById('music-toggle-label');
+  musicaFondo.volume = 0.25;
+
+  const tiempoMusicaGuardado = Number(localStorage.getItem('music_time') || 0);
+  if (Number.isFinite(tiempoMusicaGuardado)) {
+    const restaurarTiempoMusica = () => {
+      if (Number.isFinite(musicaFondo.duration)) {
+        musicaFondo.currentTime = Math.min(tiempoMusicaGuardado, musicaFondo.duration);
+      }
+    };
+    if (musicaFondo.readyState >= HTMLMediaElement.HAVE_METADATA) restaurarTiempoMusica();
+    else musicaFondo.addEventListener('loadedmetadata', restaurarTiempoMusica, { once: true });
+  }
+
+  function actualizarControlMusica() {
+    const activada = localStorage.getItem('music_muted') !== 'true';
+    botonMusica.setAttribute('aria-pressed', String(activada));
+    etiquetaMusica.textContent = activada ? 'Música activada' : 'Música desactivada';
+    iconoMusica.className = activada
+      ? 'fa-solid fa-volume-high'
+      : 'fa-solid fa-volume-xmark';
+  }
+
+  function iniciarMusicaTienda() {
+    if (localStorage.getItem('music_muted') === 'true') return;
+    musicaFondo.play().catch(() => {});
+  }
+
+  function iniciarMusicaEnInteraccion(evento) {
+    if (evento.target.closest('#music-toggle')) return;
+    iniciarMusicaTienda();
+    document.removeEventListener('pointerdown', iniciarMusicaEnInteraccion);
+    document.removeEventListener('keydown', iniciarMusicaEnInteraccion);
+  }
+
+  botonMusica.addEventListener('click', () => {
+    const activada = localStorage.getItem('music_muted') === 'true';
+    localStorage.setItem('music_muted', String(!activada));
+    if (activada) iniciarMusicaTienda();
+    else {
+      localStorage.setItem('music_time', String(musicaFondo.currentTime));
+      musicaFondo.pause();
+    }
+    actualizarControlMusica();
+  });
+
+  actualizarControlMusica();
+  iniciarMusicaTienda();
+  ['pointerdown', 'keydown'].forEach(evento => {
+    document.addEventListener(evento, iniciarMusicaEnInteraccion);
+  });
+  musicaFondo.addEventListener('timeupdate', () => {
+    localStorage.setItem('music_time', String(musicaFondo.currentTime));
+  });
+  window.addEventListener('pagehide', () => {
+    localStorage.setItem('music_time', String(musicaFondo.currentTime));
+  });
+
   // ---------- catálogo de productos posibles (se van rotando en los anaqueles) ----------
   const catalogoProductos = [
     { nombre:'Paleta',      icono:'fa-candy-cane', precio:8   },
