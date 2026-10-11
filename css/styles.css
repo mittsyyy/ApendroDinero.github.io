@@ -519,46 +519,6 @@ body {
   to   { transform: translateX(110vw); }
 }
 
-/* ===== ÁRBOLES ===== */
-.tree {
-  position: absolute;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.tree-trunk {
-  background: #8B5E3C;
-  border-radius: 4px;
-}
-
-.tree-top {
-  background: #4CAF50;
-  border-radius: 50% 50% 45% 45%;
-}
-
-.tree-top-2 {
-  background: #388E3C;
-  border-radius: 50% 50% 45% 45%;
-  margin-top: -15px;
-}
-
-.tree-left { left: 2%; bottom: 0; }
-.tree-left .tree-trunk { width: 22px; height: 50px; }
-.tree-left .tree-top   { width: 90px; height: 90px; }
-.tree-left .tree-top-2 { width: 70px; height: 70px; }
-
-.tree-right { right: 3%; bottom: 0; }
-.tree-right .tree-trunk { width: 18px; height: 40px; }
-.tree-right .tree-top   { width: 75px; height: 75px; background: #43A047; }
-.tree-right .tree-top-2 { width: 58px; height: 55px; background: #2E7D32; }
-
-.tree-far-right { right: 12%; bottom: 0; }
-.tree-far-right .tree-trunk { width: 14px; height: 30px; }
-.tree-far-right .tree-top   { width: 55px; height: 55px; background: #66BB6A; }
-.tree-far-right .tree-top-2 { width: 42px; height: 42px; background: #388E3C; }
-
 /* ===== COLINAS ===== */
 .hills {
   position: absolute;
