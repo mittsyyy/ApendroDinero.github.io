@@ -49,3 +49,5 @@ function hablar(texto){
     voz.lang = "es-MX";
     speechSynthesis.speak(voz);
 }
+
+}
