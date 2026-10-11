@@ -36,16 +36,13 @@
 
   <!-- Barra superior -->
   <div class="top-bar">
-    <span class="title-label">⚖️ Comparación de Valores</span>
+    <span class="title-label"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i> Comparación de Valores</span>
     <div class="progress-bar-wrap">
       <div class="progress-bar-fill" id="progressFill"></div>
     </div>
     <div id="header-icons" style="display:flex;gap:10px;">
-      <button class="icon-btn" id="mute-btn" onclick="toggleMute()">
-        <i class="fa-solid fa-volume-high"></i>
-      </button>
       <button class="icon-btn" onclick="openModal('settings-modal')">
-        <i class="fa-solid fa-gear"></i>
+        <i class="fa-solid fa-gear" aria-hidden="true"></i>
       </button>
     </div>
   </div>
@@ -86,7 +83,7 @@
 
   <!-- Botón escuchar -->
   <button class="listen-btn" onclick="escucharPregunta()">
-    <i class="fa-solid fa-ear-listen"></i> Escuchar pregunta
+    <i class="fa-solid fa-ear-listen" aria-hidden="true"></i> Escuchar pregunta
   </button>
 
   <!-- Feedback -->
@@ -98,7 +95,7 @@
   <!-- Modal Ajustes -->
   <div class="modal-overlay" id="settings-modal">
     <div class="modal">
-      <button class="modal-close" onclick="closeModal('settings-modal')">✕</button>
+      <button class="modal-close" onclick="closeModal('settings-modal')" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
       <h2>Ajustes</h2>
       <div class="setting-row">
         <span><i class="fa-solid fa-volume-high"></i> Sonido</span>

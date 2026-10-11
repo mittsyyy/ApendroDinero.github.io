@@ -84,7 +84,7 @@ body {
   justify-content: center;
   align-items: center;
   margin-bottom: 24px;
-  min-height: 220px;
+  min-height: 270px;
 }
 
 .product-box {
@@ -103,8 +103,8 @@ body {
 }
 
 .product-box img {
-  width: 160px;
-  height: 140px;
+  width: 240px;
+  height: 210px;
   object-fit: contain;
 }
 
@@ -602,6 +602,13 @@ body {
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
+  body { overflow: auto; }
+  #game-wrapper {
+    height: auto;
+    min-height: 100vh;
+    justify-content: flex-start;
+    padding: 78px 12px 24px;
+  }
   .shop-card {
     padding: 22px 18px 24px;
     min-height: 420px;
@@ -618,8 +625,8 @@ body {
   }
 
   .product-box img {
-    width: 130px;
-    height: 110px;
+    width: 220px;
+    height: 190px;
   }
 
   .option-shop-btn {

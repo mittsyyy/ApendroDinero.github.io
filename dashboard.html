@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aprendo a Reconocer el Dinero — Dashboard</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
   <script src="js/storage.js"></script>
   <style>
@@ -97,7 +97,7 @@
       transition: background .15s, color .15s;
       border: none; background: transparent; width: 100%; text-align: left;
     }
-    .sb-item i { font-size: 18px; flex-shrink: 0; }
+    .sb-item .emoji-icon { font-size: 18px; flex-shrink: 0; }
     .sb-item:hover  { background: var(--sb-bg-hover); color: #fff; }
     .sb-item.active { background: var(--sb-bg-active); color: #fff; }
     .sb-item.active i { color: var(--sb-accent); }
@@ -126,7 +126,7 @@
       transition: background .15s;
     }
     .sb-toggle:hover { background: var(--sb-bg-hover); color: #fff; }
-    .sb-toggle i { font-size: 18px; }
+    .sb-toggle #sb-toggle-icon { font-size: 18px; }
 
     .sb-profile {
       margin-top: auto;
@@ -216,7 +216,7 @@
     }
     .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
     .card-title { font-size: 13px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 7px; }
-    .card-title i { font-size: 16px; color: var(--text-secondary); }
+    .card-title .emoji-icon { font-size: 16px; color: var(--text-secondary); }
     .card-action { font-size: 11px; color: #4A90E2; cursor: pointer; font-weight: 500; }
 
     .grid2 { display: grid; grid-template-columns: 1.5fr 1fr; gap: 14px; margin-bottom: 14px; }
@@ -329,7 +329,7 @@
 <!-- ══ SIDEBAR ══ -->
 <aside class="sidebar" id="sidebar">
   <a class="sb-logo" href="#">
-    <div class="sb-logo-icon"><i class="ti ti-coins"></i></div>
+    <div class="sb-logo-icon"><span class="emoji-icon"><i class="fa-solid fa-coins" aria-hidden="true"></i></span></div>
     <div class="sb-logo-text">
       <div class="sb-logo-title">Aprendo Dinero</div>
       <div class="sb-logo-sub">Panel del maestro</div>
@@ -339,20 +339,20 @@
   <div class="sb-section">Principal</div>
   <nav class="sb-nav">
     <button class="sb-item active" data-view="resumen" onclick="setPage(this)">
-      <i class="ti ti-layout-dashboard"></i>
+      <span class="emoji-icon"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i></span>
       <span class="sb-item-text">Resumen</span>
     </button>
     <button class="sb-item" data-view="alumnos" onclick="setPage(this)">
-      <i class="ti ti-users"></i>
+      <span class="emoji-icon"><i class="fa-solid fa-users" aria-hidden="true"></i></span>
       <span class="sb-item-text">Alumnos</span>
       <span class="sb-item-badge" id="badge-alumnos">0</span>
     </button>
     <button class="sb-item" data-view="modulos" onclick="setPage(this)">
-      <i class="ti ti-puzzle"></i>
+      <span class="emoji-icon"><i class="fa-solid fa-puzzle-piece" aria-hidden="true"></i></span>
       <span class="sb-item-text">Módulos</span>
     </button>
     <button class="sb-item" data-view="ranking" onclick="setPage(this)">
-      <i class="ti ti-trophy"></i>
+      <span class="emoji-icon"><i class="fa-solid fa-trophy" aria-hidden="true"></i></span>
       <span class="sb-item-text">Ranking</span>
     </button>
   </nav>
@@ -360,15 +360,15 @@
   <div class="sb-section">Análisis</div>
   <nav class="sb-nav">
     <button class="sb-item" data-view="progreso" onclick="setPage(this)">
-      <i class="ti ti-chart-bar"></i>
+      <span class="emoji-icon"><i class="fa-solid fa-chart-column" aria-hidden="true"></i></span>
       <span class="sb-item-text">Progreso</span>
     </button>
     <button class="sb-item" data-view="logros" onclick="setPage(this)">
-      <i class="ti ti-award"></i>
+      <span class="emoji-icon"><i class="fa-solid fa-award" aria-hidden="true"></i></span>
       <span class="sb-item-text">Logros</span>
     </button>
     <button class="sb-item" data-view="actividad" onclick="setPage(this)">
-      <i class="ti ti-activity"></i>
+      <span class="emoji-icon"><i class="fa-solid fa-chart-line" aria-hidden="true"></i></span>
       <span class="sb-item-text">Actividad</span>
     </button>
   </nav>
@@ -376,24 +376,24 @@
   <div class="sb-section">Sistema</div>
   <nav class="sb-nav">
     <button class="sb-item" data-view="config" onclick="setPage(this)">
-      <i class="ti ti-settings"></i>
+      <span class="emoji-icon"><i class="fa-solid fa-gear" aria-hidden="true"></i></span>
       <span class="sb-item-text">Configuración</span>
     </button>
   </nav>
 
   <button class="sb-toggle" id="sb-toggle-btn" onclick="toggleSidebar()" title="Colapsar menú">
-    <i class="ti ti-layout-sidebar-left-collapse" id="sb-toggle-icon"></i>
+    <span class="emoji-icon" id="sb-toggle-icon"><i class="fa-solid fa-angles-left" aria-hidden="true"></i></span>
   </button>
 
   <div class="sb-profile">
-    <div class="sb-avatar">🦉</div>
+    <div class="sb-avatar"><i class="fa-solid fa-user-tie" aria-hidden="true"></i></div>
     <div class="sb-profile-info">
       <div class="sb-profile-name" id="sb-profile-name">Profesor/a</div>
       <div class="sb-profile-role">Maestra · Admin</div>
     </div>
     <button onclick="cerrarSesion()" title="Cerrar sesión"
             style="background:transparent;border:none;color:rgba(255,255,255,0.6);cursor:pointer;font-size:16px;padding:6px;margin-left:auto;">
-      <i class="ti ti-logout"></i>
+      <span class="emoji-icon"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i></span>
     </button>
   </div>
 </aside>
@@ -406,8 +406,8 @@
       <div class="topbar-sub">Ciclo escolar 2024–25 &nbsp;·&nbsp; 5 alumnos activos</div>
     </div>
     <div class="topbar-right">
-      <button class="topbar-btn"><i class="ti ti-download" style="font-size:13px;"></i> Exportar</button>
-      <button class="topbar-btn topbar-btn-primary"><i class="ti ti-user-plus" style="font-size:13px;"></i> Nuevo alumno</button>
+      <button class="topbar-btn"><span class="emoji-icon"><i class="fa-solid fa-download" aria-hidden="true"></i></span> Exportar</button>
+      <button class="topbar-btn topbar-btn-primary"><span class="emoji-icon"><i class="fa-solid fa-user-plus" aria-hidden="true"></i></span> Nuevo alumno</button>
     </div>
   </header>
 
@@ -418,25 +418,25 @@
 
       <div class="metrics">
         <div class="metric">
-          <div class="metric-icon"><i class="ti ti-users"></i></div>
+          <div class="metric-icon"><i class="fa-solid fa-users" aria-hidden="true"></i></div>
           <div class="metric-value" id="m-alumnos">0</div>
           <div class="metric-label">Alumnos activos</div>
           <div class="metric-sub" id="m-alumnos-sub">Sin datos todavía</div>
         </div>
         <div class="metric">
-          <div class="metric-icon"><i class="ti ti-star"></i></div>
+          <div class="metric-icon"><i class="fa-solid fa-star" aria-hidden="true"></i></div>
           <div class="metric-value" id="m-puntos">0</div>
           <div class="metric-label">Puntos acumulados</div>
           <div class="metric-sub" id="m-puntos-sub">Promedio 0 / alumno</div>
         </div>
         <div class="metric">
-          <div class="metric-icon"><i class="ti ti-puzzle"></i></div>
+          <div class="metric-icon"><i class="fa-solid fa-puzzle-piece" aria-hidden="true"></i></div>
           <div class="metric-value" id="m-mods">0</div>
           <div class="metric-label">Módulos completados</div>
           <div class="metric-sub" id="m-mods-sub">0% del total posible</div>
         </div>
         <div class="metric">
-          <div class="metric-icon"><i class="ti ti-trophy"></i></div>
+          <div class="metric-icon"><i class="fa-solid fa-trophy" aria-hidden="true"></i></div>
           <div class="metric-value" id="m-logros">0</div>
           <div class="metric-label">Logros otorgados</div>
           <div class="metric-sub" id="m-logros-sub">—</div>
@@ -446,14 +446,14 @@
       <div class="grid2">
         <div class="card">
           <div class="card-header">
-            <div class="card-title"><i class="ti ti-medal"></i> Ranking de alumnos</div>
+            <div class="card-title"><span class="emoji-icon"><i class="fa-solid fa-ranking-star" aria-hidden="true"></i></span> Ranking de alumnos</div>
             <span class="card-action" onclick="cambiarVista('ranking')" style="cursor:pointer;">Ver todos →</span>
           </div>
           <div id="ranking-list"></div>
         </div>
         <div class="card">
           <div class="card-header">
-            <div class="card-title"><i class="ti ti-chart-bar"></i> Completación por módulo</div>
+            <div class="card-title"><span class="emoji-icon"><i class="fa-solid fa-chart-column" aria-hidden="true"></i></span> Completación por módulo</div>
           </div>
           <div id="mod-bars"></div>
         </div>
@@ -461,15 +461,15 @@
 
       <div class="grid3">
         <div class="card">
-          <div class="card-header"><div class="card-title"><i class="ti ti-activity"></i> Actividad reciente</div></div>
+          <div class="card-header"><div class="card-title"><span class="emoji-icon"><i class="fa-solid fa-chart-line" aria-hidden="true"></i></span> Actividad reciente</div></div>
           <div id="activity-list"></div>
         </div>
         <div class="card">
-          <div class="card-header"><div class="card-title"><i class="ti ti-award"></i> Logros recientes</div></div>
+          <div class="card-header"><div class="card-title"><span class="emoji-icon"><i class="fa-solid fa-award" aria-hidden="true"></i></span> Logros recientes</div></div>
           <div id="logros-list"></div>
         </div>
         <div class="card">
-          <div class="card-header"><div class="card-title"><i class="ti ti-flame"></i> Rachas activas</div></div>
+          <div class="card-header"><div class="card-title"><span class="emoji-icon"><i class="fa-solid fa-fire" aria-hidden="true"></i></span> Rachas activas</div></div>
           <div id="rachas-list"></div>
         </div>
       </div>
@@ -480,7 +480,7 @@
     <section class="dash-view" data-view="alumnos" style="display:none;">
       <div class="card">
         <div class="card-header">
-          <div class="card-title"><i class="ti ti-users"></i> Todos los alumnos</div>
+          <div class="card-title"><span class="emoji-icon"><i class="fa-solid fa-users" aria-hidden="true"></i></span> Todos los alumnos</div>
           <input type="text" id="filtro-alumnos" placeholder="Buscar alumno..."
                  style="border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px;outline:none;">
         </div>
@@ -505,7 +505,7 @@
     <!-- ═══════ VISTA: MÓDULOS ═══════ -->
     <section class="dash-view" data-view="modulos" style="display:none;">
       <div class="card">
-        <div class="card-header"><div class="card-title"><i class="ti ti-puzzle"></i> Detalle por módulo</div></div>
+        <div class="card-header"><div class="card-title"><span class="emoji-icon"><i class="fa-solid fa-puzzle-piece" aria-hidden="true"></i></span> Detalle por módulo</div></div>
         <div id="modulos-detalle" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;"></div>
       </div>
     </section>
@@ -513,7 +513,7 @@
     <!-- ═══════ VISTA: RANKING ═══════ -->
     <section class="dash-view" data-view="ranking" style="display:none;">
       <div class="card">
-        <div class="card-header"><div class="card-title"><i class="ti ti-trophy"></i> Ranking completo</div></div>
+        <div class="card-header"><div class="card-title"><span class="emoji-icon"><i class="fa-solid fa-trophy" aria-hidden="true"></i></span> Ranking completo</div></div>
         <div id="ranking-completo"></div>
       </div>
     </section>
@@ -521,13 +521,13 @@
     <!-- ═══════ VISTA: PROGRESO ═══════ -->
     <section class="dash-view" data-view="progreso" style="display:none;">
       <div class="section-full card">
-        <div class="card-header"><div class="card-title"><i class="ti ti-layout-grid"></i> Progreso por alumno y módulo</div></div>
+        <div class="card-header"><div class="card-title"><span class="emoji-icon"><i class="fa-solid fa-table-cells-large" aria-hidden="true"></i></span> Progreso por alumno y módulo</div></div>
         <div class="tab-row" id="prog-tabs"></div>
         <div class="prog-grid" id="prog-grid"></div>
       </div>
 
       <div class="card">
-        <div class="card-header"><div class="card-title"><i class="ti ti-chart-bar"></i> Puntaje promedio por módulo</div></div>
+        <div class="card-header"><div class="card-title"><span class="emoji-icon"><i class="fa-solid fa-chart-column" aria-hidden="true"></i></span> Puntaje promedio por módulo</div></div>
         <div class="chart-legend" id="chart-legend"></div>
         <div class="chart-wrap">
           <canvas id="modChart" role="img"
@@ -540,7 +540,7 @@
     <!-- ═══════ VISTA: LOGROS ═══════ -->
     <section class="dash-view" data-view="logros" style="display:none;">
       <div class="card">
-        <div class="card-header"><div class="card-title"><i class="ti ti-award"></i> Logros del grupo</div></div>
+        <div class="card-header"><div class="card-title"><span class="emoji-icon"><i class="fa-solid fa-award" aria-hidden="true"></i></span> Logros del grupo</div></div>
         <div id="logros-full" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;"></div>
       </div>
     </section>
@@ -548,7 +548,7 @@
     <!-- ═══════ VISTA: ACTIVIDAD ═══════ -->
     <section class="dash-view" data-view="actividad" style="display:none;">
       <div class="card">
-        <div class="card-header"><div class="card-title"><i class="ti ti-activity"></i> Historial de actividad</div></div>
+        <div class="card-header"><div class="card-title"><span class="emoji-icon"><i class="fa-solid fa-chart-line" aria-hidden="true"></i></span> Historial de actividad</div></div>
         <div id="actividad-completa"></div>
       </div>
     </section>
@@ -556,7 +556,7 @@
     <!-- ═══════ VISTA: CONFIGURACIÓN ═══════ -->
     <section class="dash-view" data-view="config" style="display:none;">
       <div class="card" style="max-width:640px;">
-        <div class="card-header"><div class="card-title"><i class="ti ti-settings"></i> Configuración</div></div>
+        <div class="card-header"><div class="card-title"><span class="emoji-icon"><i class="fa-solid fa-gear" aria-hidden="true"></i></span> Configuración</div></div>
         <div style="padding:8px 0;">
 
           <div style="padding:14px 0;border-bottom:1px solid var(--border);">
@@ -568,7 +568,7 @@
             <div style="font-weight:600;margin-bottom:8px;">Datos guardados</div>
             <div style="color:var(--text-secondary);font-size:13px;margin-bottom:10px;" id="conf-stats">—</div>
             <button onclick="resetearDatos()" style="background:#FEE2E2;color:#991B1B;border:none;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
-              <i class="ti ti-trash"></i> Borrar todos los datos
+              <span class="emoji-icon"><i class="fa-solid fa-trash" aria-hidden="true"></i></span> Borrar todos los datos
             </button>
             <div style="font-size:11px;color:var(--text-hint);margin-top:6px;">
               Borra el progreso de TODOS los alumnos en este navegador. No se puede deshacer.
@@ -578,7 +578,7 @@
           <div style="padding:14px 0;border-bottom:1px solid var(--border);">
             <div style="font-weight:600;margin-bottom:8px;">Exportar</div>
             <button onclick="exportarDatos()" style="background:var(--sb-bg);color:white;border:none;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
-              <i class="ti ti-download"></i> Descargar JSON
+              <span class="emoji-icon"><i class="fa-solid fa-download" aria-hidden="true"></i></span> Descargar JSON
             </button>
             <div style="font-size:11px;color:var(--text-hint);margin-top:6px;">
               Descarga una copia del progreso de todos los alumnos.
@@ -588,7 +588,7 @@
           <div style="padding:14px 0;">
             <div style="font-weight:600;margin-bottom:8px;">Sesión</div>
             <button onclick="cerrarSesion()" style="background:transparent;color:var(--text-primary);border:1px solid var(--border-strong);padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
-              <i class="ti ti-logout"></i> Cerrar sesión
+              <span class="emoji-icon"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i></span> Cerrar sesión
             </button>
           </div>
 
@@ -621,9 +621,7 @@
     const icon = document.getElementById('sb-toggle-icon');
     sb.classList.toggle('collapsed');
     main.classList.toggle('collapsed');
-    icon.className = sb.classList.contains('collapsed')
-      ? 'ti ti-layout-sidebar-left-expand'
-      : 'ti ti-layout-sidebar-left-collapse';
+    icon.textContent = sb.classList.contains('collapsed') ? '▶️' : '◀️';
   }
   function setPage(el) {
     document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
@@ -674,26 +672,40 @@
     ? window.AprendoStorage.obtenerDashboard()
     : { hayDatos: false, jugadores: [], modulos: [], actividad: [] };
 
+  const emojiIcons = {
+    '🧑‍🚀':'fa-user-astronaut', '🦄':'fa-horse', '🤖':'fa-robot', '🐱':'fa-cat',
+    '🐰':'fa-user', '🐼':'fa-paw', '🦊':'fa-paw', '🐶':'fa-dog', '🦉':'fa-user',
+    '⚖️':'fa-scale-balanced', '🏦':'fa-building-columns', '🪙':'fa-coins',
+    '🧮':'fa-calculator', '🛒':'fa-cart-shopping', '👑':'fa-crown', '🏆':'fa-trophy',
+    '⚡':'fa-bolt', '💰':'fa-sack-dollar', '💯':'fa-award', '🌟':'fa-star',
+    '🎯':'fa-bullseye', '🚀':'fa-rocket', '🥇':'fa-medal', '🥈':'fa-medal', '🥉':'fa-medal',
+    '🔥':'fa-fire', '📊':'fa-chart-column'
+  };
+  function iconMarkup(value, fallback = 'fa-circle-question') {
+    const icon = emojiIcons[value] || (String(value || '').startsWith('fa-') ? value : fallback);
+    return `<i class="fa-solid ${icon}" aria-hidden="true"></i>`;
+  }
+
   const DEMO = {
     alumnos: [
-      { nombre:'Diego López',     avatar:'🧑‍🚀', color:'#4A90E2', puntos:450, racha:7, logros:11,
+      { nombre:'Diego López',     avatar:'fa-user-astronaut', color:'#4A90E2', puntos:450, racha:7, logros:11,
         progreso:[{mod:1,score:10,comp:1},{mod:2,score:10,comp:1},{mod:3,score:10,comp:1},{mod:4,score:10,comp:1},{mod:5,score:10,comp:1}] },
-      { nombre:'Isabella Torres', avatar:'🦄',   color:'#FF6B9D', puntos:310, racha:5, logros:4,
+      { nombre:'Isabella Torres', avatar:'fa-horse',   color:'#FF6B9D', puntos:310, racha:5, logros:4,
         progreso:[{mod:1,score:10,comp:1},{mod:2,score:9,comp:1},{mod:3,score:8,comp:1},{mod:4,score:7,comp:0},{mod:5,score:0,comp:0}] },
-      { nombre:'Mateo Flores',    avatar:'🤖',   color:'#9B59B6', puntos:230, racha:2, logros:2,
+      { nombre:'Mateo Flores',    avatar:'fa-robot',   color:'#9B59B6', puntos:230, racha:2, logros:2,
         progreso:[{mod:1,score:9,comp:1},{mod:2,score:8,comp:1},{mod:3,score:7,comp:1},{mod:4,score:0,comp:0},{mod:5,score:0,comp:0}] },
-      { nombre:'Sofía Ramírez',   avatar:'🐱',   color:'#F5A623', puntos:160, racha:3, logros:2,
+      { nombre:'Sofía Ramírez',   avatar:'fa-cat',   color:'#F5A623', puntos:160, racha:3, logros:2,
         progreso:[{mod:1,score:8,comp:1},{mod:2,score:6,comp:1},{mod:3,score:6,comp:0},{mod:4,score:0,comp:0},{mod:5,score:0,comp:0}] },
-      { nombre:'Valentina Cruz',  avatar:'🐰',   color:'#FF69B4', puntos:80,  racha:1, logros:1,
+      { nombre:'Valentina Cruz',  avatar:'fa-user',   color:'#FF69B4', puntos:80,  racha:1, logros:1,
         progreso:[{mod:1,score:7,comp:1},{mod:2,score:6,comp:0},{mod:3,score:0,comp:0},{mod:4,score:0,comp:0},{mod:5,score:0,comp:0}] },
     ],
     actividad: [
-      {alumno:'Diego',    avatar:'🧑‍🚀',modulo:'Súper Moneda',   icono:'⚖️',color:'#4A90E2',puntaje:10,total:10},
-      {alumno:'Diego',    avatar:'🧑‍🚀',modulo:'Ahorro',         icono:'🏦',color:'#E74C3C',puntaje:10,total:10},
-      {alumno:'Isabella', avatar:'🦄',  modulo:'Monedas Básicas',icono:'🪙',color:'#F5A623',puntaje:10,total:10},
-      {alumno:'Sofía',    avatar:'🐱',  modulo:'Monedas Básicas',icono:'🪙',color:'#F5A623',puntaje:8, total:10},
-      {alumno:'Valentina',avatar:'🐰',  modulo:'Monedas Básicas',icono:'🪙',color:'#F5A623',puntaje:7, total:10},
-      {alumno:'Mateo',    avatar:'🤖',  modulo:'El Mercado',     icono:'🧮',color:'#7ED321',puntaje:7, total:10},
+      {alumno:'Diego',    avatar:'fa-user-astronaut',modulo:'Súper Moneda',   icono:'fa-scale-balanced',color:'#4A90E2',puntaje:10,total:10},
+      {alumno:'Diego',    avatar:'fa-user-astronaut',modulo:'Ahorro',         icono:'fa-building-columns',color:'#E74C3C',puntaje:10,total:10},
+      {alumno:'Isabella', avatar:'fa-horse',  modulo:'Monedas Básicas',icono:'fa-coins',color:'#F5A623',puntaje:10,total:10},
+      {alumno:'Sofía',    avatar:'fa-cat',  modulo:'Monedas Básicas',icono:'fa-coins',color:'#F5A623',puntaje:8, total:10},
+      {alumno:'Valentina',avatar:'fa-user',  modulo:'Monedas Básicas',icono:'fa-coins',color:'#F5A623',puntaje:7, total:10},
+      {alumno:'Mateo',    avatar:'fa-robot',  modulo:'El Mercado',     icono:'fa-calculator',color:'#7ED321',puntaje:7, total:10},
     ]
   };
 
@@ -703,11 +715,11 @@
   const modulos = (dashData.modulos && dashData.modulos.length)
     ? dashData.modulos
     : [
-        {id:1,titulo:'Módulo 1',nombre:'Monedas Básicas',icono:'🪙',color:'#F5A623'},
-        {id:2,titulo:'Módulo 2',nombre:'Súper Moneda',   icono:'⚖️',color:'#4A90E2'},
-        {id:3,titulo:'Módulo 3',nombre:'El Mercado',     icono:'🧮',color:'#7ED321'},
-        {id:4,titulo:'Módulo 4',nombre:'El Banco',       icono:'🛒',color:'#9B59B6'},
-        {id:5,titulo:'Módulo 5',nombre:'Ahorro',         icono:'🏦',color:'#E74C3C'},
+        {id:1,titulo:'Módulo 1',nombre:'Monedas Básicas',icono:'fa-coins',color:'#F5A623'},
+        {id:2,titulo:'Módulo 2',nombre:'Súper Moneda',   icono:'fa-scale-balanced',color:'#4A90E2'},
+        {id:3,titulo:'Módulo 3',nombre:'El Mercado',     icono:'fa-calculator',color:'#7ED321'},
+        {id:4,titulo:'Módulo 4',nombre:'El Banco',       icono:'fa-cart-shopping',color:'#9B59B6'},
+        {id:5,titulo:'Módulo 5',nombre:'Ahorro',         icono:'fa-building-columns',color:'#E74C3C'},
       ];
   const actividad = usandoDemo ? DEMO.actividad : dashData.actividad.map(a => ({
     alumno: (a.alumno || '').split(' ')[0],
@@ -722,12 +734,12 @@
   // Logros derivados de progreso real (o demo si no hay)
   const logros_recientes = usandoDemo
     ? [
-        {emoji:'👑',nombre:'Leyenda Financiera',  quien:'Diego'},
-        {emoji:'🏆',nombre:'Maestro del Dinero',  quien:'Diego'},
-        {emoji:'⚡',nombre:'Imparable (racha 7d)',quien:'Diego'},
-        {emoji:'💰',nombre:'Perfecto M1',         quien:'Isabella'},
-        {emoji:'💯',nombre:'Centenario',          quien:'Isabella'},
-        {emoji:'🌟',nombre:'En Camino',           quien:'Mateo'},
+        {emoji:'fa-crown',nombre:'Leyenda Financiera',  quien:'Diego'},
+        {emoji:'fa-trophy',nombre:'Maestro del Dinero',  quien:'Diego'},
+        {emoji:'fa-bolt',nombre:'Imparable (racha 7d)',quien:'Diego'},
+        {emoji:'fa-sack-dollar',nombre:'Perfecto M1',         quien:'Isabella'},
+        {emoji:'fa-award',nombre:'Centenario',          quien:'Isabella'},
+        {emoji:'fa-star',nombre:'En Camino',           quien:'Mateo'},
       ]
     : (function() {
         const out = [];
@@ -735,12 +747,12 @@
           const nombre = a.nombre.split(' ')[0];
           const modsCompletos = a.progreso.filter(p => p.comp === 1).length;
           const modsPerfectos = a.progreso.filter(p => p.score === 10).length;
-          if (modsCompletos === 5) out.push({emoji:'👑',nombre:'Leyenda Financiera',quien:nombre});
-          if (modsPerfectos >= 3)  out.push({emoji:'🏆',nombre:'Maestro del Dinero',quien:nombre});
-          if (a.racha >= 7)        out.push({emoji:'⚡',nombre:`Imparable (${a.racha}d)`,quien:nombre});
-          if (a.progreso[0] && a.progreso[0].score === 10) out.push({emoji:'💰',nombre:'Perfecto M1',quien:nombre});
-          if (a.puntos >= 100)     out.push({emoji:'💯',nombre:'Centenario',quien:nombre});
-          if (modsCompletos >= 1 && modsCompletos < 5) out.push({emoji:'🌟',nombre:'En Camino',quien:nombre});
+          if (modsCompletos === 5) out.push({emoji:'fa-crown',nombre:'Leyenda Financiera',quien:nombre});
+          if (modsPerfectos >= 3)  out.push({emoji:'fa-trophy',nombre:'Maestro del Dinero',quien:nombre});
+          if (a.racha >= 7)        out.push({emoji:'fa-bolt',nombre:`Imparable (${a.racha}d)`,quien:nombre});
+          if (a.progreso[0] && a.progreso[0].score === 10) out.push({emoji:'fa-sack-dollar',nombre:'Perfecto M1',quien:nombre});
+          if (a.puntos >= 100)     out.push({emoji:'fa-award',nombre:'Centenario',quien:nombre});
+          if (modsCompletos >= 1 && modsCompletos < 5) out.push({emoji:'fa-star',nombre:'En Camino',quien:nombre});
         });
         return out.slice(0, 6);
       })();
@@ -749,7 +761,7 @@
   if (usandoDemo) {
     const banner = document.createElement('div');
     banner.style.cssText = 'background:#FEF3C7;border:1px solid #FCD34D;color:#92400E;padding:10px 16px;border-radius:8px;margin-bottom:16px;font-size:13px;';
-    banner.innerHTML = '📊 <strong>Datos de ejemplo</strong> — Aún no hay jugadores reales. Cuando alguien juegue desde este navegador y guarde su nombre en la pantalla inicial, verás aquí su progreso real.';
+    banner.innerHTML = `${iconMarkup('fa-chart-column')} <strong>Datos de ejemplo</strong> — Aún no hay jugadores reales. Cuando alguien juegue desde este navegador y guarde su nombre en la pantalla inicial, verás aquí su progreso real.`;
     const main = document.querySelector('.main-content') || document.body;
     main.insertBefore(banner, main.firstChild);
   }
@@ -757,14 +769,14 @@
   // Ranking
   const rankEl = document.getElementById('ranking-list');
   alumnos.forEach((a,i) => {
-    const medals = ['🥇','🥈','🥉'];
-    const fire  = a.racha>=7 ? `<span class="badge badge-fire"><i class="ti ti-flame" style="font-size:10px;"></i>${a.racha}d</span>` : '';
+    const medals = ['fa-medal','fa-medal','fa-medal'];
+    const fire  = a.racha>=7 ? `<span class="badge badge-fire">${iconMarkup('fa-fire')}${a.racha}d</span>` : '';
     const green = a.racha>=3&&a.racha<7 ? `<span class="badge badge-streak">${a.racha}d</span>` : '';
     const div = document.createElement('div');
     div.className = 'alumno-row';
     div.innerHTML = `
-      <span class="rank-num">${i<3?medals[i]:i+1}</span>
-      <div class="av" style="background:${a.color}22;">${a.avatar}</div>
+      <span class="rank-num">${i<3?iconMarkup(medals[i]):i+1}</span>
+      <div class="av" style="background:${a.color}22;">${iconMarkup(a.avatar)}</div>
       <div class="alumno-info">
         <div class="alumno-name">${a.nombre}</div>
         <div class="alumno-meta">${a.logros} logros ${fire}${green}</div>
@@ -781,7 +793,7 @@
     const div  = document.createElement('div');
     div.className = 'bar-row';
     div.innerHTML = `
-      <div class="bar-label"><span>${m.icono} ${m.nombre}</span><span>${comp}/${alumnos.length}</span></div>
+      <div class="bar-label"><span>${iconMarkup(m.icono)} ${m.nombre}</span><span>${comp}/${alumnos.length}</span></div>
       <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${m.color};"></div></div>`;
     barEl.appendChild(div);
   });
@@ -794,9 +806,9 @@
     const div = document.createElement('div');
     div.className = 'activity-row';
     div.innerHTML = `
-      <div class="mod-badge" style="background:${a.color}22;">${a.icono}</div>
+      <div class="mod-badge" style="background:${a.color}22;">${iconMarkup(a.icono)}</div>
       <div style="flex:1;min-width:0;">
-        <div class="act-name">${a.avatar} ${a.alumno}</div>
+        <div class="act-name">${iconMarkup(a.avatar)} ${a.alumno}</div>
         <div class="act-mod">${a.modulo}</div>
       </div>
       <span class="score-pill ${cls}">${a.puntaje}/${a.total}</span>`;
@@ -809,7 +821,7 @@
     const div = document.createElement('div');
     div.className = 'logro-item';
     div.innerHTML = `
-      <div class="logro-emoji-wrap">${l.emoji}</div>
+      <div class="logro-emoji-wrap">${iconMarkup(l.emoji)}</div>
       <div><div class="logro-name">${l.nombre}</div><div class="logro-who">${l.quien}</div></div>`;
     loEl.appendChild(div);
   });
@@ -822,7 +834,7 @@
     const div = document.createElement('div');
     div.className = 'racha-row';
     div.innerHTML = `
-      <div class="mini-av" style="background:${a.color}22;">${a.avatar}</div>
+      <div class="mini-av" style="background:${a.color}22;">${iconMarkup(a.avatar)}</div>
       <div class="racha-info">
         <div class="racha-name">${a.nombre.split(' ')[0]}</div>
         <div class="mini-track"><div class="mini-fill" style="width:${w}%;background:${col};"></div></div>
@@ -847,7 +859,7 @@
       if(comp) cell.style.borderColor='#D1FAE5';
       else if(score>0) cell.style.borderColor='#FEF3C7';
       cell.innerHTML=`
-        <div class="prog-icon">${m.icono}</div>
+        <div class="prog-icon">${iconMarkup(m.icono)}</div>
         <div class="prog-mod-title">${m.titulo}</div>
         <div class="prog-score ${cls}">${score}/10</div>
         <div class="prog-label">${label}</div>`;
@@ -857,7 +869,7 @@
   alumnos.forEach((a,i)=>{
     const btn=document.createElement('button');
     btn.className='tab-btn'+(i===0?' active':'');
-    btn.textContent=a.avatar+' '+a.nombre.split(' ')[0];
+    btn.innerHTML=iconMarkup(a.avatar)+' '+a.nombre.split(' ')[0];
     btn.addEventListener('click',()=>renderProgGrid(i));
     tabsEl.appendChild(btn);
   });
@@ -873,7 +885,7 @@
   modulos.forEach((m,i)=>{
     const span=document.createElement('span');
     span.className='legend-item';
-    span.innerHTML=`<span class="legend-dot" style="background:${m.color};"></span>${m.icono} ${m.nombre}: <strong>${avgData[i]}</strong>`;
+    span.innerHTML=`<span class="legend-dot" style="background:${m.color};"></span>${iconMarkup(m.icono)} ${m.nombre}: <strong>${avgData[i]}</strong>`;
     legendEl.appendChild(span);
   });
   let modChartInstance = null;
@@ -887,7 +899,7 @@
     modChartInstance = new Chart(ctx, {
       type:'bar',
       data:{
-        labels:modulos.map(m=>m.icono+' '+m.nombre),
+        labels:modulos.map(m=>m.nombre),
         datasets:[{
           label:'Puntaje promedio',
           data:avgData,
@@ -962,21 +974,21 @@
       const compl = a.progreso.filter(p => p.comp === 1).length;
       const mejorMod = a.progreso.reduce((best, p) => (p.score > (best?.score || 0) ? p : best), null);
       const mejorInfo = mejorMod && mejorMod.score > 0
-        ? `${modulos.find(m => m.id === mejorMod.mod)?.icono || ''} M${mejorMod.mod} (${mejorMod.score}/10)`
+        ? `${iconMarkup(modulos.find(m => m.id === mejorMod.mod)?.icono)} M${mejorMod.mod} (${mejorMod.score}/10)`
         : '—';
       const tr = document.createElement('tr');
       tr.style.borderBottom = '1px solid var(--border)';
       tr.innerHTML = `
         <td style="padding:10px 8px;">
           <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:32px;height:32px;border-radius:50%;background:${a.color}22;display:flex;align-items:center;justify-content:center;font-size:16px;">${a.avatar}</div>
+            <div style="width:32px;height:32px;border-radius:50%;background:${a.color}22;display:flex;align-items:center;justify-content:center;font-size:16px;">${iconMarkup(a.avatar)}</div>
             <span style="font-weight:600;">${a.nombre}</span>
           </div>
         </td>
         <td style="padding:10px 8px;font-weight:700;color:var(--acc1);">${(a.puntos||0).toLocaleString()}</td>
         <td style="padding:10px 8px;">${compl} / ${modulos.length}</td>
         <td style="padding:10px 8px;">${mejorInfo}</td>
-        <td style="padding:10px 8px;">${a.racha}d 🔥</td>
+        <td style="padding:10px 8px;">${a.racha}d ${iconMarkup('fa-fire')}</td>
         <td style="padding:10px 8px;">${a.logros || 0}</td>
       `;
       tbody.appendChild(tr);
@@ -1003,7 +1015,7 @@
       card.style.cssText = `border-top:4px solid ${m.color};margin:0;`;
       card.innerHTML = `
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-          <div style="width:48px;height:48px;border-radius:12px;background:${m.color}22;display:flex;align-items:center;justify-content:center;font-size:24px;">${m.icono}</div>
+          <div style="width:48px;height:48px;border-radius:12px;background:${m.color}22;display:flex;align-items:center;justify-content:center;font-size:24px;">${iconMarkup(m.icono)}</div>
           <div>
             <div style="font-weight:700;font-size:15px;">${m.titulo}</div>
             <div style="color:var(--text-secondary);font-size:12px;">${m.nombre}</div>
@@ -1046,14 +1058,14 @@
       return;
     }
     ordenados.forEach((a, i) => {
-      const medals = ['🥇','🥈','🥉'];
+      const medals = ['fa-medal','fa-medal','fa-medal'];
       const div = document.createElement('div');
       div.className = 'alumno-row';
       div.style.padding = '14px 8px';
       const mods = a.progreso.filter(p => p.comp === 1).length;
       div.innerHTML = `
-        <span class="rank-num" style="font-size:18px;">${i<3?medals[i]:'#'+(i+1)}</span>
-        <div class="av" style="background:${a.color}22;width:42px;height:42px;font-size:20px;">${a.avatar}</div>
+        <span class="rank-num" style="font-size:18px;">${i<3?iconMarkup(medals[i]):'#'+(i+1)}</span>
+        <div class="av" style="background:${a.color}22;width:42px;height:42px;font-size:20px;">${iconMarkup(a.avatar)}</div>
         <div class="alumno-info">
           <div class="alumno-name" style="font-size:15px;">${a.nombre}</div>
           <div class="alumno-meta">${mods} módulos · ${a.racha}d racha · ${a.logros || 0} logros</div>
@@ -1069,14 +1081,14 @@
     if (!cont) return;
     // Catálogo de logros posibles
     const catalogo = [
-      { emoji:'👑', nombre:'Leyenda Financiera', desc:'Completar los 5 módulos', check: a => a.progreso.filter(p=>p.comp===1).length === 5 },
-      { emoji:'🏆', nombre:'Maestro del Dinero', desc:'3 o más módulos con puntaje perfecto', check: a => a.progreso.filter(p=>p.score===10).length >= 3 },
-      { emoji:'⚡', nombre:'Imparable',          desc:'Racha de 7 días o más',                check: a => a.racha >= 7 },
-      { emoji:'💯', nombre:'Centenario',         desc:'Acumular 100 puntos o más',            check: a => a.puntos >= 100 },
-      { emoji:'💰', nombre:'Perfecto M1',        desc:'10/10 en el Módulo 1',                 check: a => a.progreso[0]?.score === 10 },
-      { emoji:'🎯', nombre:'Precisión',          desc:'10/10 en al menos 1 módulo',           check: a => a.progreso.some(p=>p.score===10) },
-      { emoji:'🌟', nombre:'En Camino',          desc:'Completar al menos 1 módulo',          check: a => a.progreso.filter(p=>p.comp===1).length >= 1 },
-      { emoji:'🚀', nombre:'Despegue',           desc:'Completar 3 módulos',                  check: a => a.progreso.filter(p=>p.comp===1).length >= 3 },
+      { emoji:'fa-crown', nombre:'Leyenda Financiera', desc:'Completar los 5 módulos', check: a => a.progreso.filter(p=>p.comp===1).length === 5 },
+      { emoji:'fa-trophy', nombre:'Maestro del Dinero', desc:'3 o más módulos con puntaje perfecto', check: a => a.progreso.filter(p=>p.score===10).length >= 3 },
+      { emoji:'fa-bolt', nombre:'Imparable', desc:'Racha de 7 días o más', check: a => a.racha >= 7 },
+      { emoji:'fa-award', nombre:'Centenario', desc:'Acumular 100 puntos o más', check: a => a.puntos >= 100 },
+      { emoji:'fa-sack-dollar', nombre:'Perfecto M1', desc:'10/10 en el Módulo 1', check: a => a.progreso[0]?.score === 10 },
+      { emoji:'fa-bullseye', nombre:'Precisión', desc:'10/10 en al menos 1 módulo', check: a => a.progreso.some(p=>p.score===10) },
+      { emoji:'fa-star', nombre:'En Camino', desc:'Completar al menos 1 módulo', check: a => a.progreso.filter(p=>p.comp===1).length >= 1 },
+      { emoji:'fa-rocket', nombre:'Despegue', desc:'Completar 3 módulos', check: a => a.progreso.filter(p=>p.comp===1).length >= 3 },
     ];
     cont.innerHTML = '';
     catalogo.forEach(logro => {
@@ -1085,7 +1097,7 @@
       card.style.cssText = 'background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;';
       card.innerHTML = `
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-          <div style="font-size:36px;">${logro.emoji}</div>
+          <div style="font-size:36px;">${iconMarkup(logro.emoji)}</div>
           <div>
             <div style="font-weight:700;font-size:14px;">${logro.nombre}</div>
             <div style="color:var(--text-secondary);font-size:12px;">${logro.desc}</div>
@@ -1096,7 +1108,7 @@
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;">
           ${ganadores.length
-            ? ganadores.map(g => `<span style="background:${g.color}22;color:var(--text-primary);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;">${g.avatar} ${g.nombre.split(' ')[0]}</span>`).join('')
+            ? ganadores.map(g => `<span style="background:${g.color}22;color:var(--text-primary);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;">${iconMarkup(g.avatar)} ${g.nombre.split(' ')[0]}</span>`).join('')
             : '<span style="color:var(--text-hint);font-size:12px;">Nadie todavía</span>'}
         </div>
       `;
@@ -1122,9 +1134,9 @@
       const div = document.createElement('div');
       div.className = 'activity-row';
       div.innerHTML = `
-        <div class="mod-badge" style="background:${a.color}22;">${a.icono}</div>
+        <div class="mod-badge" style="background:${a.color}22;">${iconMarkup(a.icono)}</div>
         <div style="flex:1;min-width:0;">
-          <div class="act-name">${a.avatar} ${a.alumno}</div>
+          <div class="act-name">${iconMarkup(a.avatar)} ${a.alumno}</div>
           <div class="act-mod">${a.modulo}${fechaTxt ? ' · ' + fechaTxt : ''}</div>
         </div>
         <span class="score-pill ${cls}">${a.puntaje}/${a.total}</span>`;

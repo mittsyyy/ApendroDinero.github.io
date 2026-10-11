@@ -51,6 +51,31 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
   });
 });
 
+const backgroundMusic = document.getElementById('bg-music');
+
+function reproducirMusica() {
+  const toggle = document.getElementById('toggle-music');
+  if (!backgroundMusic || localStorage.getItem('music_muted') === 'true' || (toggle && !toggle.classList.contains('on'))) return;
+  backgroundMusic.volume = 0.25;
+  backgroundMusic.play().catch(() => {});
+}
+
+function empezarExperiencia() {
+  const start = document.getElementById('start-screen');
+  if (start) start.style.display = 'none';
+  reproducirMusica();
+}
+
+document.addEventListener('pointerdown', reproducirMusica, { once: true });
+document.addEventListener('keydown', reproducirMusica, { once: true });
+document.addEventListener('DOMContentLoaded', reproducirMusica);
+backgroundMusic?.addEventListener('timeupdate', () => {
+  localStorage.setItem('music_time', String(backgroundMusic.currentTime));
+});
+window.addEventListener('pagehide', () => {
+  if (backgroundMusic) localStorage.setItem('music_time', String(backgroundMusic.currentTime));
+});
+
 // ── Abrir módulo ─────────────────────
 let moduloActual = 1; // guarda qué módulo se abrió
 
@@ -90,19 +115,29 @@ async function saveName() {
 }
 
 async function toggleSetting(id) {
-  document.getElementById(id).classList.toggle('on');
+  const control = document.getElementById(id);
+  if (!control) return;
+  control.classList.toggle('on');
   const sonido = document.getElementById('toggle-sound').classList.contains('on');
   const musica = document.getElementById('toggle-music').classList.contains('on');
+  if (id === 'toggle-music') {
+    localStorage.setItem('music_muted', String(!musica));
+    if (musica) reproducirMusica();
+    else if (backgroundMusic) {
+      localStorage.setItem('music_time', String(backgroundMusic.currentTime));
+      backgroundMusic.pause();
+    }
+  }
   try { await DB.guardarAjustes(sonido, musica); } catch (e) { console.error(e); }
 }
 
 let muted = true;
 function toggleMute() {
   muted = !muted;
-  document.getElementById('mute-btn').innerHTML = muted
+  const muteButton = document.getElementById('mute-btn');
+  if (muteButton) muteButton.innerHTML = muted
     ? '<i class="fa-solid fa-volume-xmark"></i>'
     : '<i class="fa-solid fa-volume-high"></i>';
-  document.getElementById('mute-btn').style.color = 'white';
   showToast(muted ? 'Sonido desactivado' : 'Sonido activado');
 }
 
@@ -125,7 +160,7 @@ async function cargarResumen() {
     document.getElementById('modules-done').textContent = r.modulos_completados;
     document.getElementById('streak').textContent       = r.racha_dias;
     document.getElementById('stars').innerHTML =
-      '<i class="fa-solid fa-star" style="color: rgb(255, 212, 59);"></i>' + r.estrellas;
+      '<i class="fa-solid fa-star" style="color:#FFD43B"></i>' + r.estrellas;
   } catch (e) { console.error(e); }
 }
 
@@ -166,6 +201,9 @@ async function cargarDatos() {
     document.getElementById('name-input').value = jugador.nombre;
     document.getElementById('toggle-sound').classList.toggle('on', jugador.sonido);
     document.getElementById('toggle-music').classList.toggle('on', jugador.musica);
+    localStorage.setItem('music_muted', String(!jugador.musica));
+    if (!jugador.musica && backgroundMusic) backgroundMusic.pause();
+    if (jugador.musica) reproducirMusica();
 
     await DB.actualizarRacha();
 

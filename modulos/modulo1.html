@@ -57,14 +57,14 @@
 
 <div id="header-icons">
       <button class="icon-btn" onclick="openModal('settings-modal')">
-  <i class="fa-solid fa-gear"></i>
+  <i class="fa-solid fa-gear" aria-hidden="true"></i>
 </button>
   </div>
   </div>
 </div>
 <div class="modal-overlay" id="settings-modal">
   <div class="modal">
-    <button class="modal-close" onclick="closeModal('settings-modal')">✕</button>
+    <button class="modal-close" onclick="closeModal('settings-modal')" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
     <h2>Ajustes</h2>
     <div class="setting-row">
       <span><i class="fa-solid fa-volume-high"></i> Sonido</span>
@@ -81,7 +81,7 @@
 </div>
 
   <!-- ===== MARCADOR ===== -->
-  <div class="score-badge"><i class="fa-solid fa-star" style="color: rgb(255, 212, 59);"></i> <span id="scoreDisplay">0</span></div>
+  <div class="score-badge"><i class="fa-solid fa-star" style="color:#FFD43B"></i> <span id="scoreDisplay">0</span></div>
 
   <!-- ===== TARJETA PRINCIPAL ===== -->
   <div class="card" id="mainCard">
@@ -100,7 +100,7 @@
 
   <!-- ===== BOTÓN ESCUCHAR ===== -->
   <button class="listen-btn" onclick="escucharPregunta()">
-  <i class="fa-solid fa-ear-listen"></i> Escuchar pregunta
+  <i class="fa-solid fa-ear-listen" aria-hidden="true"></i> Escuchar pregunta
 </button>
   <!-- ===== FEEDBACK OVERLAY ===== -->
   <div class="feedback-overlay" id="feedbackOverlay">

@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="../css/felicidades.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 </head>
 <body>
@@ -22,9 +21,8 @@
 
 <!-- Header -->
 <div id="header">
-  <button class="icon-btn"><i class="fa-solid fa-grip"></i></button>
-  <button class="icon-btn"><i class="fa-solid fa-volume-xmark"></i></button>
-  <button class="icon-btn"><i class="fa-solid fa-gear"></i></button>
+  <button class="icon-btn" aria-label="Módulos"><i class="fa-solid fa-grip" aria-hidden="true"></i></button>
+  <button class="icon-btn" aria-label="Ajustes"><i class="fa-solid fa-gear" aria-hidden="true"></i></button>
 </div>
 
 <!-- Estrella izquierda -->
@@ -71,7 +69,7 @@
       <span id="next-label">Siguiente nivel</span>
     </div>
     <button id="next-btn" onclick="irSiguiente()">
-      <i class="fa-solid fa-play"></i>
+      <i class="fa-solid fa-play" aria-hidden="true"></i>
     </button>
     <div style="margin-top:14px;text-align:center;">
       <a href="../casa.html" style="color:#fff;text-decoration:underline;font-size:0.95rem;opacity:0.85;">

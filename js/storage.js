@@ -35,23 +35,23 @@
 
   // Catálogo fijo de módulos (alineado con tu juego)
   const CATALOGO_MODULOS = [
-    { id: 1, titulo: 'Módulo 1', nombre: 'Monedas Básicas', icono: '🪙', color: '#F5A623' },
-    { id: 2, titulo: 'Módulo 2', nombre: 'Súper Moneda',    icono: '⚖️', color: '#4A90E2' },
-    { id: 3, titulo: 'Módulo 3', nombre: 'El Mercado',      icono: '🧮', color: '#7ED321' },
-    { id: 4, titulo: 'Módulo 4', nombre: 'El Banco',        icono: '🛒', color: '#9B59B6' },
-    { id: 5, titulo: 'Módulo 5', nombre: 'Ahorro',          icono: '🏦', color: '#E74C3C' },
+    { id: 1, titulo: 'Módulo 1', nombre: 'Monedas Básicas', icono: 'fa-coins', color: '#F5A623' },
+    { id: 2, titulo: 'Módulo 2', nombre: 'Súper Moneda',    icono: 'fa-scale-balanced', color: '#4A90E2' },
+    { id: 3, titulo: 'Módulo 3', nombre: 'El Mercado',      icono: 'fa-calculator', color: '#7ED321' },
+    { id: 4, titulo: 'Módulo 4', nombre: 'El Banco',        icono: 'fa-cart-shopping', color: '#9B59B6' },
+    { id: 5, titulo: 'Módulo 5', nombre: 'Ahorro',          icono: 'fa-building-columns', color: '#E74C3C' },
   ];
 
   // Avatares disponibles si el jugador no tiene uno asignado
   const POOL_AVATARES = [
-    { avatar: '🧑‍🚀', color: '#4A90E2' },
-    { avatar: '🦄',   color: '#FF6B9D' },
-    { avatar: '🤖',   color: '#9B59B6' },
-    { avatar: '🐱',   color: '#F5A623' },
-    { avatar: '🐰',   color: '#FF69B4' },
-    { avatar: '🐼',   color: '#7ED321' },
-    { avatar: '🦊',   color: '#FB923C' },
-    { avatar: '🐶',   color: '#34D399' },
+    { avatar: 'fa-user-astronaut', color: '#4A90E2' },
+    { avatar: 'fa-horse', color: '#FF6B9D' },
+    { avatar: 'fa-robot', color: '#9B59B6' },
+    { avatar: 'fa-cat', color: '#F5A623' },
+    { avatar: 'fa-user', color: '#FF69B4' },
+    { avatar: 'fa-paw', color: '#7ED321' },
+    { avatar: 'fa-paw', color: '#FB923C' },
+    { avatar: 'fa-dog', color: '#34D399' },
   ];
 
   function pickAvatar(nombre, jugadores) {

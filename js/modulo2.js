@@ -192,12 +192,14 @@ function escucharPregunta() {
 function toggleMute() {
   muted = !muted;
   const btn = document.getElementById('mute-btn');
-
-  btn.innerHTML = muted
-    ? '<i class="fa-solid fa-volume-xmark"></i>'
-    : '<i class="fa-solid fa-volume-high"></i>';
-
-  if (muted) window.speechSynthesis.cancel();
+  if (btn) {
+    btn.innerHTML = muted
+      ? '<i class="fa-solid fa-volume-xmark"></i>'
+      : '<i class="fa-solid fa-volume-high"></i>';
+  }
+  const soundToggle = document.getElementById('toggle-sound');
+  if (soundToggle) soundToggle.classList.toggle('on', !muted);
+  if (muted && 'speechSynthesis' in window) window.speechSynthesis.cancel();
 
   showToast(muted ? 'Sonido desactivado' : 'Sonido activado');
 }
@@ -428,12 +430,18 @@ function closeModal(id) {
 }
 
 function toggleSetting(id) {
-  document.getElementById(id).classList.toggle('on');
+  const control = document.getElementById(id);
+  if (!control) return;
+  control.classList.toggle('on');
   if (id === 'toggle-music') {
-    toggleMusica();
+    const activada = control.classList.contains('on');
+    toggleMusica(activada);
   } else if (id === 'toggle-sound') {
     toggleMute();
   }
+  const sonido = document.getElementById('toggle-sound').classList.contains('on');
+  const musica = document.getElementById('toggle-music').classList.contains('on');
+  window.DB?.guardarAjustes(sonido, musica).catch(() => {});
 }
 
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
@@ -486,15 +494,22 @@ function iniciarMusicaSiHaceFalta() {
     .catch(() => { /* el usuario tiene que interactuar primero */ });
 }
 
-function toggleMusica() {
+function toggleMusica(activada) {
   if (!musica) return;
-  if (musica.paused) {
+  if (activada) {
     localStorage.setItem('music_muted', 'false');
+    musica.muted = false;
     musica.play().then(() => { musicaIniciada = true; }).catch(() => {});
   } else {
     localStorage.setItem('music_muted', 'true');
+    localStorage.setItem('music_time', String(musica.currentTime));
     musica.pause();
+    musicaIniciada = false;
   }
+}
+
+function guardarTiempoMusica() {
+  if (musica) localStorage.setItem('music_time', String(musica.currentTime));
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -519,10 +534,11 @@ document.addEventListener('DOMContentLoaded', () => {
   ['click', 'touchstart', 'keydown'].forEach(ev => {
     document.addEventListener(ev, iniciarMusicaSiHaceFalta, { once: false });
   });
+  musica.addEventListener('timeupdate', guardarTiempoMusica);
+  if (localStorage.getItem('music_muted') !== 'true') iniciarMusicaSiHaceFalta();
 
   // Guardar posición al salir
   window.addEventListener('beforeunload', () => {
-    if (!musica) return;
-    localStorage.setItem('music_time', String(musica.currentTime));
+    guardarTiempoMusica();
   });
 });

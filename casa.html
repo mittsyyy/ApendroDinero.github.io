@@ -37,13 +37,14 @@
     <!-- ── HEADER ── -->
     <div id="header">
       <button id="player-btn" onclick="openModal('player-modal')">
-        <div id="player-avatar"><i class="fa-solid fa-user-astronaut" style="color: rgb(255, 255, 255);"></i></div>
+        <div id="player-avatar"><i class="fa-solid fa-user-astronaut" aria-hidden="true"></i></div>
         <span id="player-name">Player</span>
       </button>
       <button id="score-btn" onclick="openModal('score-modal')">Puntaje</button>
       <div id="header-icons">
-        <button class="icon-btn" onclick="openModal('settings-modal')"><i class="fa-solid fa-gear" style="color: rgb(255, 255, 255);"></i></button>
-        <button class="icon-btn" onclick="cerrarSesion()" title="Cerrar sesión"><i class="fa-solid fa-right-from-bracket" style="color: rgb(255, 255, 255);"></i></button>
+        <a class="icon-btn" href="minitienda.html" title="Ir a la tiendita" aria-label="Ir a la tiendita"><i class="fa-solid fa-store" aria-hidden="true"></i></a>
+        <button class="icon-btn" onclick="openModal('settings-modal')" aria-label="Ajustes"><i class="fa-solid fa-gear" aria-hidden="true"></i></button>
+        <button class="icon-btn" onclick="cerrarSesion()" title="Cerrar sesión" aria-label="Cerrar sesión"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i></button>
       </div>
     </div>
 
@@ -134,8 +135,8 @@
   <!-- ══ MODAL: Player ══ -->
   <div class="modal-overlay" id="player-modal">
     <div class="modal">
-      <button class="modal-close" onclick="closeModal('player-modal')">✕</button>
-      <h2><i class="fa-solid fa-user-astronaut" style="color: rgb(7, 7, 7);"></i> Tu Perfil</h2>
+      <button class="modal-close" onclick="closeModal('player-modal')" aria-label="Cerrar"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      <h2><i class="fa-solid fa-user-astronaut" aria-hidden="true"></i> Tu Perfil</h2>
       <p>Nombre del jugador:</p>
       <input id="name-input" class="name-input" type="text" placeholder="Escribe tu nombre...">
       <button class="btn-primary" onclick="saveName()">Guardar nombre</button>
@@ -145,8 +146,8 @@
   <!-- ══ MODAL: Puntaje ══ -->
   <div class="modal-overlay" id="score-modal">
     <div class="modal">
-      <button class="modal-close" onclick="closeModal('score-modal')">✕</button>
-      <h2><i class="fa-solid fa-star" style="color: rgb(255, 212, 59);"></i> Puntaje</h2>
+      <button class="modal-close" onclick="closeModal('score-modal')" aria-label="Cerrar"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      <h2><i class="fa-solid fa-star" style="color:#FFD43B" aria-hidden="true"></i> Puntaje</h2>
       <div class="score-grid">
         <div class="score-item">
           <div class="num" id="total-score">0</div>
@@ -161,7 +162,7 @@
           <div class="lbl">Racha de días</div>
         </div>
         <div class="score-item">
-          <div class="num" id="stars"><i class="fa-solid fa-star" style="color: rgb(255, 212, 59);"></i>0</div>
+          <div class="num" id="stars"><i class="fa-solid fa-star" style="color:#FFD43B" aria-hidden="true"></i>0</div>
           <div class="lbl">Estrellas</div>
         </div>
       </div>
@@ -172,14 +173,14 @@
   <!-- ══ MODAL: Ajustes ══ -->
   <div class="modal-overlay" id="settings-modal">
     <div class="modal">
-      <button class="modal-close" onclick="closeModal('settings-modal')">✕</button>
+      <button class="modal-close" onclick="closeModal('settings-modal')" aria-label="Cerrar"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
       <h2>Ajustes</h2>
       <div class="setting-row">
-        <span><i class="fa-solid fa-volume-high"></i> Sonido</span>
+        <span><i class="fa-solid fa-volume-high" aria-hidden="true"></i> Sonido</span>
         <div class="toggle on" id="toggle-sound" onclick="toggleSetting('toggle-sound')"></div>
       </div>
       <div class="setting-row">
-        <span><i class="fa-solid fa-music"></i> Música</span>
+        <span><i class="fa-solid fa-music" aria-hidden="true"></i> Música</span>
         <div class="toggle on" id="toggle-music" onclick="toggleSetting('toggle-music')"></div>
       </div>
 
@@ -191,7 +192,7 @@
   <!-- ══ MODAL: Módulo ══ -->
   <div class="modal-overlay" id="module-modal">
     <div class="modal">
-      <button class="modal-close" onclick="closeModal('module-modal')">✕</button>
+      <button class="modal-close" onclick="closeModal('module-modal')" aria-label="Cerrar"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
       <h2 id="mod-title">Módulo</h2>
       <p id="mod-desc">Descripción del módulo.</p>
 
@@ -214,11 +215,11 @@
   <div id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/db.js"></script>
-<script src="js/storage.js"></script>
-<script src="js/app.js"></script>
   <audio id="bg-music" loop>
     <source src="audio/musica.mp3" type="audio/mpeg">
   </audio>
+<script src="js/db.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/app.js"></script>
   </body>
   </html>

@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Mini Tienda — Aprendo Dinero</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Baloo+2:wght@500;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -174,7 +175,7 @@
     position:relative;
     top:36px;
   }
-  .anaquel .item-emoji{
+  .anaquel .item-icon{
     font-size:3.2rem;
     display:block;
     filter: drop-shadow(0 4px 3px rgba(0,0,0,.2));
@@ -457,24 +458,24 @@
 <script>
   // ---------- catálogo de productos posibles (se van rotando en los anaqueles) ----------
   const catalogoProductos = [
-    { nombre:'Paleta',      emoji:'🍭', precio:8   },
-    { nombre:'Globo',       emoji:'🎈', precio:15  },
-    { nombre:'Cuento',      emoji:'📕', precio:35  },
-    { nombre:'Pelota',      emoji:'⚽', precio:50  },
-    { nombre:'Mochila',     emoji:'🎒', precio:120 },
-    { nombre:'Bicicleta',   emoji:'🚲', precio:350 },
-    { nombre:'Helado',      emoji:'🍦', precio:12  },
-    { nombre:'Yoyo',        emoji:'🪀', precio:20  },
-    { nombre:'Carrito',     emoji:'🚗', precio:45  },
-    { nombre:'Peluche',     emoji:'🧸', precio:75  },
-    { nombre:'Cometa',      emoji:'🪁', precio:28  },
-    { nombre:'Patines',     emoji:'🛼', precio:150 },
-    { nombre:'Reloj',       emoji:'⌚', precio:90  },
-    { nombre:'Lentes',      emoji:'🕶️', precio:40  },
-    { nombre:'Sombrero',    emoji:'👒', precio:33  },
-    { nombre:'Patineta',    emoji:'🛹', precio:200 },
-    { nombre:'Robot',       emoji:'🤖', precio:180 },
-    { nombre:'Dinosaurio',  emoji:'🦖', precio:65  },
+    { nombre:'Paleta',      icono:'fa-candy-cane', precio:8   },
+    { nombre:'Globo',       icono:'fa-circle', precio:15  },
+    { nombre:'Cuento',      icono:'fa-book-open', precio:35  },
+    { nombre:'Pelota',      icono:'fa-futbol', precio:50  },
+    { nombre:'Mochila',     icono:'fa-briefcase', precio:120 },
+    { nombre:'Bicicleta',   icono:'fa-bicycle', precio:350 },
+    { nombre:'Helado',      icono:'fa-ice-cream', precio:12  },
+    { nombre:'Yoyo',        icono:'fa-circle-dot', precio:20  },
+    { nombre:'Carrito',     icono:'fa-car', precio:45  },
+    { nombre:'Peluche',     icono:'fa-gift', precio:75  },
+    { nombre:'Cometa',      icono:'fa-paper-plane', precio:28  },
+    { nombre:'Patines',     icono:'fa-person-skating', precio:150 },
+    { nombre:'Reloj',       icono:'fa-clock', precio:90  },
+    { nombre:'Lentes',      icono:'fa-glasses', precio:40  },
+    { nombre:'Sombrero',    icono:'fa-hat-cowboy', precio:33  },
+    { nombre:'Patineta',    icono:'fa-person-skating', precio:200 },
+    { nombre:'Robot',       icono:'fa-robot', precio:180 },
+    { nombre:'Dinosaurio',  icono:'fa-dragon', precio:65  },
   ];
 
   // ---------- puestos fijos de los anaqueles (posición dentro de la escena) ----------
@@ -521,7 +522,7 @@
       return;
     }
     listaInventarioEl.innerHTML = inventario
-      .map(it => `<div class="item-inventario" title="${it.nombre}">${it.emoji}</div>`)
+      .map(it => `<div class="item-inventario" title="${it.nombre}"><i class="fa-solid ${it.icono}" aria-hidden="true"></i></div>`)
       .join('');
   }
   actualizarInventario();
@@ -533,8 +534,8 @@
   function dibujarAnaquel(p){
     const el = anaquelEls[p.id];
     el.innerHTML = `
-      <div class="burbuja">✋ toca para comprar</div>
-      <span class="item-emoji">${p.emoji}</span>
+      <div class="burbuja">Toca para comprar</div>
+      <span class="item-icon"><i class="fa-solid ${p.icono}" aria-hidden="true"></i></span>
       <div class="mesa"></div>
       <div class="etiqueta">$${p.precio}</div>
     `;
@@ -698,7 +699,7 @@
   function abrirModal(producto){
     productoActivo = producto;
     fichas = [];
-    modalNombre.textContent = producto.nombre + ' ' + producto.emoji;
+    modalNombre.innerHTML = `<i class="fa-solid ${producto.icono}" aria-hidden="true"></i> ${producto.nombre}`;
     modalPrecio.textContent = '$' + producto.precio;
     ocultarMensajeModal();
     renderBandeja();
@@ -744,8 +745,8 @@
     const total = fichas.reduce((a,b)=>a+b,0);
     const precio = productoActivo.precio;
     if(total === precio){
-      mostrarMensajeModal(`¡Compraste ${productoActivo.nombre}! 🎉`, 'correcto');
-      inventario.push({ nombre: productoActivo.nombre, emoji: productoActivo.emoji });
+      mostrarMensajeModal(`¡Compraste ${productoActivo.nombre}!`, 'correcto');
+      inventario.push({ nombre: productoActivo.nombre, icono: productoActivo.icono });
       actualizarInventario();
       const elAnaquel = anaquelEls[productoActivo.id];
       elAnaquel.classList.add('comprado');
@@ -756,7 +757,7 @@
         const slot = productos.find(x=> x.id === idComprado);
         const nuevo = elegirProductoAleatorio(nombreComprado);
         slot.nombre = nuevo.nombre;
-        slot.emoji = nuevo.emoji;
+        slot.icono = nuevo.icono;
         slot.precio = nuevo.precio;
         dibujarAnaquel(slot);
         elAnaquel.classList.remove('comprado');

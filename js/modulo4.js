@@ -274,9 +274,13 @@ function toggleMute() {
   muted = !muted;
 
   const btn = document.getElementById('mute-btn');
-  btn.innerHTML = muted
-    ? '<i class="fa-solid fa-volume-xmark"></i>'
-    : '<i class="fa-solid fa-volume-high"></i>';
+  if (btn) {
+    btn.innerHTML = muted
+      ? '<i class="fa-solid fa-volume-xmark"></i>'
+      : '<i class="fa-solid fa-volume-high"></i>';
+  }
+  const soundToggle = document.getElementById('toggle-sound');
+  if (soundToggle) soundToggle.classList.toggle('on', !muted);
 
   if (muted && 'speechSynthesis' in window) {
     window.speechSynthesis.cancel();
@@ -297,7 +301,18 @@ function closeModal(id) {
 }
 
 function toggleSetting(id) {
-  document.getElementById(id).classList.toggle('on');
+  const control = document.getElementById(id);
+  if (!control) return;
+  control.classList.toggle('on');
+  if (id === 'toggle-music') {
+    const activada = control.classList.contains('on');
+    toggleMusica(activada);
+  } else if (id === 'toggle-sound') {
+    toggleMute();
+  }
+  const sonido = document.getElementById('toggle-sound').classList.contains('on');
+  const musica = document.getElementById('toggle-music').classList.contains('on');
+  window.DB?.guardarAjustes(sonido, musica).catch(() => {});
 }
 
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
@@ -331,23 +346,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
 let musica;
 
+function iniciarMusica() {
+  if (!musica || localStorage.getItem('music_muted') === 'true') return;
+  musica.play().catch(() => {});
+}
+
+function toggleMusica(activada) {
+  if (!musica) return;
+  localStorage.setItem('music_muted', String(!activada));
+  if (activada) iniciarMusica();
+  else {
+    localStorage.setItem('music_time', String(musica.currentTime));
+    musica.pause();
+  }
+}
+
+function guardarTiempoMusica() {
+  if (musica) localStorage.setItem('music_time', String(musica.currentTime));
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const musicMuted = localStorage.getItem('music_muted') === 'true';
-  if (musicMuted) return;
-
   musica = new Audio('../audio/musica.mp3');
   musica.loop = true;
   musica.volume = 0.2;
 
   const savedTime = parseFloat(localStorage.getItem('music_time') || '0');
   musica.currentTime = savedTime;
+  document.getElementById('toggle-music')?.classList.toggle('on', !musicMuted);
+  if (!musicMuted) iniciarMusica();
 
-  document.body.addEventListener('click', () => {
-    musica.play().catch(() => {});
-  }, { once: true });
-
-  window.addEventListener('beforeunload', () => {
-    if (!musica) return;
-    localStorage.setItem('music_time', String(musica.currentTime));
+  ['pointerdown', 'keydown'].forEach(evento => {
+    document.addEventListener(evento, iniciarMusica);
   });
+  musica.addEventListener('timeupdate', guardarTiempoMusica);
+
+  window.addEventListener('pagehide', guardarTiempoMusica);
 });

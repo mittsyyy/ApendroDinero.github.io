@@ -91,18 +91,52 @@ let audioDesbloqueado = false; // ← los navegadores bloquean audio sin interac
 function toggleMute() {
   muted = !muted;
   const btn = document.getElementById('mute-btn');
-  if (!btn) return;
-  btn.innerHTML   = muted
-    ? '<i class="fa-solid fa-volume-xmark"></i>'
-    : '<i class="fa-solid fa-volume-high"></i>';
-  btn.style.color = 'white';
-  if (muted) window.speechSynthesis.cancel();
+  if (btn) {
+    btn.innerHTML = muted
+      ? '<i class="fa-solid fa-volume-xmark"></i>'
+      : '<i class="fa-solid fa-volume-high"></i>';
+  }
+  const soundToggle = document.getElementById('toggle-sound');
+  if (soundToggle) soundToggle.classList.toggle('on', !muted);
+  if (muted && 'speechSynthesis' in window) window.speechSynthesis.cancel();
   showToast(muted ? 'Sonido desactivado' : 'Sonido activado');
+}
+
+let musica;
+
+function iniciarMusica() {
+  if (!musica || localStorage.getItem('music_muted') === 'true') return;
+  musica.play().catch(() => {});
+}
+
+function toggleMusica(activada) {
+  if (!musica) return;
+  localStorage.setItem('music_muted', String(!activada));
+  if (activada) iniciarMusica();
+  else {
+    localStorage.setItem('music_time', String(musica.currentTime));
+    musica.pause();
+  }
+}
+
+function guardarTiempoMusica() {
+  if (musica) localStorage.setItem('music_time', String(musica.currentTime));
 }
 
 // Interruptores del modal de Ajustes
 function toggleSetting(id) {
-  document.getElementById(id).classList.toggle('on');
+  const control = document.getElementById(id);
+  if (!control) return;
+  control.classList.toggle('on');
+  if (id === 'toggle-music') {
+    const activada = control.classList.contains('on');
+    toggleMusica(activada);
+  } else if (id === 'toggle-sound') {
+    toggleMute();
+  }
+  const sonido = document.getElementById('toggle-sound').classList.contains('on');
+  const musicaActiva = document.getElementById('toggle-music').classList.contains('on');
+  window.DB?.guardarAjustes(sonido, musicaActiva).catch(() => {});
 }
 
 // =============================================
@@ -383,9 +417,25 @@ function showToast(msg) {
 //   INIT
 // =============================================
 document.addEventListener('DOMContentLoaded', () => {
+  musica = new Audio('../audio/musica.mp3');
+  musica.loop = true;
+  musica.volume = 0.2;
+  const tiempoGuardado = Number(localStorage.getItem('music_time') || 0);
+  if (Number.isFinite(tiempoGuardado)) musica.currentTime = tiempoGuardado;
+
+  const musicToggle = document.getElementById('toggle-music');
+  const activada = localStorage.getItem('music_muted') !== 'true';
+  if (musicToggle) musicToggle.classList.toggle('on', activada);
+  if (activada) iniciarMusica();
+  ['pointerdown', 'keydown'].forEach(evento => {
+    document.addEventListener(evento, iniciarMusica);
+  });
+  musica.addEventListener('timeupdate', guardarTiempoMusica);
+  window.addEventListener('pagehide', guardarTiempoMusica);
+
   const btn = document.getElementById('mute-btn');
   if (btn) {
-    btn.innerHTML   = '<i class="fa-solid fa-volume-high"></i>';
+    btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
     btn.style.color = 'white';
   }
   loadQuestion();
