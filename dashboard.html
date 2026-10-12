@@ -17,7 +17,7 @@
       --sb-bg-hover:    rgba(255,255,255,.07);
       --sb-bg-active:   rgba(255,255,255,.13);
       --sb-accent:      #4FC3F7;
-      --sb-text:        rgba(255,255,255,.75);
+      --sb-text:        rgba(255, 255, 255, 0.193);
       --sb-text-dim:    rgba(255,255,255,.38);
       --sb-width:       230px;
       --sb-width-col:   64px;
@@ -1159,7 +1159,8 @@ window.__dashData = dashData;
   })();
 
   window.crearChartSiHaceFalta = crearChartSiHaceFalta;
- // fin cargarDashboard
+} // fin cargarDashboard
+
 cargarDashboard();
 
 function resetearDatos() {
@@ -1178,7 +1179,7 @@ function exportarDatos() {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
-}
+</script>
 </script>
 </body>
 </html>
