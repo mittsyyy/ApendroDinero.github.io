@@ -137,6 +137,10 @@ async function toggleSetting(id) {
   control.classList.toggle('on');
   const sonido = document.getElementById('toggle-sound').classList.contains('on');
   const musica = document.getElementById('toggle-music').classList.contains('on');
+  if (id === 'toggle-sound') {
+    localStorage.setItem('sound_muted', String(!sonido));
+    if (!sonido && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+  }
   if (id === 'toggle-music') {
     localStorage.setItem('music_muted', String(!musica));
     if (musica) reproducirMusica();
@@ -218,6 +222,7 @@ async function cargarDatos() {
     document.getElementById('name-input').value = jugador.nombre;
     document.getElementById('toggle-sound').classList.toggle('on', jugador.sonido);
     document.getElementById('toggle-music').classList.toggle('on', jugador.musica);
+    localStorage.setItem('sound_muted', String(!jugador.sonido));
     localStorage.setItem('music_muted', String(!jugador.musica));
     if (!jugador.musica && backgroundMusic) backgroundMusic.pause();
     if (jugador.musica) reproducirMusica();

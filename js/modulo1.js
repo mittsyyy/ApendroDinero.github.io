@@ -85,11 +85,12 @@ const DBm = window.DB || {
 // =============================================
 //   MUTE
 // =============================================
-let muted         = false;
+let muted         = localStorage.getItem('sound_muted') === 'true';
 let audioDesbloqueado = false; // ← los navegadores bloquean audio sin interacción
 
 function toggleMute() {
   muted = !muted;
+  localStorage.setItem('sound_muted', String(muted));
   const btn = document.getElementById('mute-btn');
   if (btn) {
     btn.innerHTML = muted
