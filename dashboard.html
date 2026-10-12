@@ -6,7 +6,9 @@
   <title>Aprendo a Reconocer el Dinero — Dashboard</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-  <script src="js/storage.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/db.js"></script>
+  <script src="js/dashboard-db.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -609,11 +611,12 @@
     }
   })();
 
-  function cerrarSesion() {
-    localStorage.removeItem('rolSesion');
-    localStorage.removeItem('nombreProfesor');
-    window.location.href = 'index.html';
-  }
+ async function cerrarSesion() {
+  localStorage.removeItem('rolSesion');
+  localStorage.removeItem('nombreProfesor');
+  try { await sb.auth.signOut(); } catch (e) {}
+  window.location.href = 'index.html';
+}
 
   function toggleSidebar() {
     const sb   = document.getElementById('sidebar');
@@ -664,13 +667,11 @@
     }
   }
 
-  // ═══════ DATOS DEL DASHBOARD ═══════
-  // Lee progreso real desde localStorage (via storage.js).
-  // Si no hay datos aún, usa demo para que el dashboard no se vea vacío.
 
-  const dashData = window.AprendoStorage
-    ? window.AprendoStorage.obtenerDashboard()
-    : { hayDatos: false, jugadores: [], modulos: [], actividad: [] };
+  // ═══════ DATOS DEL DASHBOARD ═══════
+async function cargarDashboard() {
+const dashData = await window.cargarDashboardSupabase();
+window.__dashData = dashData;
 
   const emojiIcons = {
     '🧑‍🚀':'fa-user-astronaut', '🦄':'fa-horse', '🤖':'fa-robot', '🐱':'fa-cat',
@@ -1157,24 +1158,27 @@
     }
   })();
 
-  function resetearDatos() {
-    if (!confirm('¿Borrar TODO el progreso de los alumnos? Esta acción no se puede deshacer.')) return;
-    if (window.AprendoStorage) window.AprendoStorage.resetear();
-    location.reload();
-  }
+  window.crearChartSiHaceFalta = crearChartSiHaceFalta;
+ // fin cargarDashboard
+cargarDashboard();
 
-  function exportarDatos() {
-    const data = localStorage.getItem('apdinero_data') || '{}';
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `apdinero_export_${new Date().toISOString().slice(0,10)}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
+function resetearDatos() {
+  alert('Para borrar datos de alumnos, hazlo desde Supabase (Table Editor).');
+}
+
+function exportarDatos() {
+  const data = JSON.stringify(window.__dashData || {}, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `apdinero_export_${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+}
 </script>
 </body>
 </html>
