@@ -73,6 +73,25 @@
   .tienda-nav-button i{ font-size:1rem; }
   .tienda-nav-button:active{ transform:translateY(2px); box-shadow:0 2px 0 rgba(2,62,138,.28); }
 
+  .monedero-resumen{
+    position:fixed;
+    top:62px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:41;
+    padding:7px 14px;
+    border:2px solid var(--morado-oscuro);
+    border-radius:14px;
+    background:rgba(255,255,255,.96);
+    box-shadow:0 4px 0 rgba(2,62,138,.28);
+    text-align:center;
+    font-size:.8rem;
+    font-weight:800;
+    white-space:nowrap;
+  }
+  .monedero-resumen strong{ color:var(--morado-oscuro); }
+  .monedero-resumen small{ display:block; color:#52647a; font-size:.68rem; }
+
   header{ text-align:center; flex:0 0 auto; }
   header h1{
     color:#fff;
@@ -359,6 +378,7 @@
   }
   .modal h3{ margin:0 0 4px; color:var(--morado-oscuro); font-size:1.3rem; }
   .modal .sub{ margin:0 0 14px; font-weight:700; color:var(--texto); }
+  .modal .saldo-modal{ margin:-8px 0 14px; font-weight:800; color:var(--morado-oscuro); }
   .monedero-grid{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(64px,1fr));
@@ -420,6 +440,7 @@
   .modal-botones button:active{ transform:translateY(3px); box-shadow:none; }
   .btn-cerrar{ background:#fff; color:var(--morado-oscuro); border:2px solid var(--morado) !important; }
   .btn-pagar{ background:var(--verde); color:#fff; }
+  .btn-pagar:disabled{ opacity:.5; cursor:not-allowed; box-shadow:none; }
   .mensaje-modal{
     margin-top:10px; padding:10px 12px; border-radius:12px; font-weight:800; text-align:center;
     display:none; font-size:.9rem;
@@ -430,6 +451,10 @@
   .mensaje-modal.sobra{ background:#FDE2E9; color:#C41E4E; }
 
   @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+  @media (max-width:620px){
+    .monedero-resumen{ top:58px; padding:5px 9px; font-size:.7rem; }
+    .monedero-resumen small{ font-size:.62rem; }
+  }
 </style>
 </head>
 <body>
@@ -443,6 +468,12 @@
     <span id="music-toggle-label">Música activada</span>
   </button>
 </nav>
+
+<div class="monedero-resumen" aria-live="polite">
+  <strong>Ganado: <span id="dineroGenerado">Cargando...</span></strong>
+  <span> · Disponible: <span id="saldoDisponible">Cargando...</span></span>
+  <small><span id="puntosGanados">Cargando puntos...</span> · 2 puntos = $1</small>
+</div>
 
 <div class="zona-juego">
   <div class="panel-inventario">
@@ -476,6 +507,7 @@
   <div class="modal">
     <h3 id="modalNombre">Producto</h3>
     <p class="sub">Precio: <span id="modalPrecio">$0</span></p>
+    <p class="saldo-modal">Dinero disponible: <span id="modalDisponible">Cargando...</span></p>
 
     <div class="monedero-grid" id="modalMonedero"></div>
 
@@ -500,7 +532,63 @@
   <source src="audio/musica.mp3" type="audio/mpeg">
 </audio>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/db.js"></script>
 <script>
+  const dineroGeneradoEl = document.getElementById('dineroGenerado');
+  const saldoDisponibleEl = document.getElementById('saldoDisponible');
+  const puntosGanadosEl = document.getElementById('puntosGanados');
+  const claveDineroGastado = 'minitienda_dinero_gastado';
+  const gastoGuardado = Number(localStorage.getItem(claveDineroGastado) || 0);
+  let puntosGanados = 0;
+  let dineroGenerado = 0;
+  let dineroGastado = Number.isFinite(gastoGuardado) ? Math.max(0, Math.floor(gastoGuardado)) : 0;
+  let saldoDisponible = 0;
+  let saldoCargado = false;
+  let errorCargandoSaldo = false;
+
+  function actualizarMonedero(){
+    dineroGenerado = Math.floor(puntosGanados / 2);
+    saldoDisponible = Math.max(0, dineroGenerado - dineroGastado);
+    dineroGeneradoEl.textContent = '$' + dineroGenerado;
+    saldoDisponibleEl.textContent = '$' + saldoDisponible;
+    puntosGanadosEl.textContent = puntosGanados + ' puntos';
+    const modalDisponible = document.getElementById('modalDisponible');
+    if(modalDisponible){
+      modalDisponible.textContent = saldoCargado ? '$' + saldoDisponible : 'No disponible';
+    }
+    actualizarDisponibilidadCompra();
+    if(saldoCargado && productoActivo && fondoModal.classList.contains('abierto')){
+      if(saldoDisponible < productoActivo.precio){
+        mostrarMensajeModal(`No tienes suficiente dinero. Te faltan $${productoActivo.precio-saldoDisponible}.`, 'falta');
+      }else{
+        ocultarMensajeModal();
+      }
+    }
+  }
+
+  async function cargarMonedero(){
+    try{
+      if(!window.DB) throw new Error('No se pudo iniciar la conexión con el progreso del jugador.');
+      const progreso = await DB.obtenerProgreso();
+      puntosGanados = Object.values(progreso).reduce((total, modulo) => {
+        const puntos = Number(modulo.puntos);
+        return total + (Number.isFinite(puntos) ? Math.max(0, puntos) : 0);
+      }, 0);
+      saldoCargado = true;
+      actualizarMonedero();
+    }catch(error){
+      errorCargandoSaldo = true;
+      console.error('Error cargando el saldo de la tiendita:', error);
+      dineroGeneradoEl.textContent = 'No disponible';
+      saldoDisponibleEl.textContent = 'No disponible';
+      puntosGanadosEl.textContent = 'No se pudo cargar el progreso';
+      const modalDisponible = document.getElementById('modalDisponible');
+      if(modalDisponible) modalDisponible.textContent = 'No disponible';
+      actualizarDisponibilidadCompra();
+    }
+  }
+
   const musicaFondo = document.getElementById('bg-music');
   const botonMusica = document.getElementById('music-toggle');
   const iconoMusica = document.getElementById('music-toggle-icon');
@@ -793,12 +881,32 @@
 
   let productoActivo = null;
   let fichas = [];
+  const modalDisponible = document.getElementById('modalDisponible');
+  const botonPagar = document.getElementById('btnPagarModal');
+
+  function actualizarDisponibilidadCompra(){
+    if(!botonPagar) return;
+    botonPagar.disabled = !saldoCargado || !productoActivo || saldoDisponible < productoActivo.precio;
+  }
 
   denominaciones.forEach(d=>{
     const el = document.createElement('div');
     el.className = d.tipo;
     el.textContent = d.etiqueta;
-    el.addEventListener('click', ()=>{ fichas.push(d.valor); renderBandeja(); });
+    el.addEventListener('click', ()=>{
+      if(!saldoCargado){
+        mostrarMensajeModal('No se pudo cargar tu saldo. Intenta volver a abrir la tiendita.', 'falta');
+        return;
+      }
+      const totalActual = fichas.reduce((total, valor)=>total+valor,0);
+      if(totalActual + d.valor > saldoDisponible){
+        mostrarMensajeModal('No puedes usar más dinero del que tienes disponible.', 'falta');
+        return;
+      }
+      fichas.push(d.valor);
+      ocultarMensajeModal();
+      renderBandeja();
+    });
     modalMonedero.appendChild(el);
   });
 
@@ -808,8 +916,20 @@
     modalNombre.innerHTML = `<i class="fa-solid ${producto.icono}" aria-hidden="true"></i> ${producto.nombre}`;
     modalPrecio.textContent = '$' + producto.precio;
     ocultarMensajeModal();
+    modalDisponible.textContent = saldoCargado ? '$' + saldoDisponible : 'No disponible';
     renderBandeja();
     fondoModal.classList.add('abierto');
+    actualizarDisponibilidadCompra();
+    if(!saldoCargado){
+      mostrarMensajeModal(
+        errorCargandoSaldo
+          ? 'No se pudo cargar tu saldo; por ahora no puedes comprar.'
+          : 'Consultando tu saldo...',
+        'falta'
+      );
+    }else if(saldoDisponible < producto.precio){
+      mostrarMensajeModal(`No tienes suficiente dinero. Te faltan $${producto.precio-saldoDisponible}.`, 'falta');
+    }
   }
 
   function cerrarModal(){
@@ -826,7 +946,11 @@
         const chip = document.createElement('div');
         chip.className = 'ficha';
         chip.textContent = '$' + v;
-        chip.addEventListener('click', ()=>{ fichas.splice(i,1); renderBandeja(); });
+        chip.addEventListener('click', ()=>{
+          fichas.splice(i,1);
+          ocultarMensajeModal();
+          renderBandeja();
+        });
         modalBandeja.appendChild(chip);
       });
     }
@@ -846,11 +970,24 @@
 
   document.getElementById('btnCerrarModal').addEventListener('click', cerrarModal);
 
-  document.getElementById('btnPagarModal').addEventListener('click', ()=>{
+  botonPagar.addEventListener('click', ()=>{
     if(!productoActivo) return;
+    if(!saldoCargado){
+      mostrarMensajeModal('No se pudo cargar tu saldo; por ahora no puedes comprar.', 'falta');
+      return;
+    }
     const total = fichas.reduce((a,b)=>a+b,0);
     const precio = productoActivo.precio;
+    if(saldoDisponible < precio){
+      mostrarMensajeModal(`No tienes suficiente dinero. Te faltan $${precio-saldoDisponible}.`, 'falta');
+      actualizarDisponibilidadCompra();
+      return;
+    }
     if(total === precio){
+      const gastoActualizado = dineroGastado + precio;
+      localStorage.setItem(claveDineroGastado, String(gastoActualizado));
+      dineroGastado = gastoActualizado;
+      actualizarMonedero();
       mostrarMensajeModal(`¡Compraste ${productoActivo.nombre}!`, 'correcto');
       inventario.push({ nombre: productoActivo.nombre, icono: productoActivo.icono });
       actualizarInventario();
@@ -880,6 +1017,8 @@
   fondoModal.addEventListener('click', (e)=>{
     if(e.target === fondoModal) cerrarModal();
   });
+
+  cargarMonedero();
 </script>
 
 </body>
