@@ -53,6 +53,13 @@
     z-index:40;
     pointer-events:none;
   }
+  .tienda-lateral{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:8px;
+    pointer-events:auto;
+  }
   .tienda-nav-button{
     display:inline-flex;
     align-items:center;
@@ -74,21 +81,18 @@
   .tienda-nav-button:active{ transform:translateY(2px); box-shadow:0 2px 0 rgba(2,62,138,.28); }
 
   .monedero-resumen{
-    position:relative;
     flex:0 0 auto;
-    margin-top:48px;
-    padding:7px 14px;
+    padding:6px 10px;
     border:2px solid var(--morado-oscuro);
     border-radius:14px;
     background:rgba(255,255,255,.96);
     box-shadow:0 4px 0 rgba(2,62,138,.28);
-    text-align:center;
-    font-size:.8rem;
+    text-align:left;
+    font-size:.78rem;
     font-weight:800;
     white-space:nowrap;
   }
   .monedero-resumen strong{ color:var(--morado-oscuro); }
-  .monedero-resumen small{ display:block; color:#52647a; font-size:.68rem; }
 
   header{ text-align:center; flex:0 0 auto; }
   header h1{
@@ -450,28 +454,29 @@
 
   @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
   @media (max-width:620px){
-    .monedero-resumen{ margin-top:48px; padding:5px 9px; font-size:.7rem; }
-    .monedero-resumen small{ font-size:.62rem; }
+    .barra-tienda{ left:8px; right:8px; }
+    .tienda-lateral{ gap:6px; }
+    .monedero-resumen{ padding:5px 8px; font-size:.68rem; }
+    .tienda-nav-button{ padding:7px 10px; font-size:.82rem; }
   }
 </style>
 </head>
 <body>
 
 <nav class="barra-tienda" aria-label="Navegación de la tiendita">
-  <a class="tienda-nav-button" href="casa.html" aria-label="Volver a la casa">
-    <i class="fa-solid fa-house" aria-hidden="true"></i><span>Casa</span>
-  </a>
+  <div class="tienda-lateral">
+    <a class="tienda-nav-button" href="casa.html" aria-label="Volver a la casa">
+      <i class="fa-solid fa-house" aria-hidden="true"></i><span>Casa</span>
+    </a>
+    <div class="monedero-resumen" aria-live="polite">
+      <strong>Saldo disponible: <span id="saldoDisponible">Cargando...</span></strong>
+    </div>
+  </div>
   <button class="tienda-nav-button" id="music-toggle" type="button" aria-pressed="true">
     <i class="fa-solid fa-volume-high" id="music-toggle-icon" aria-hidden="true"></i>
     <span id="music-toggle-label">Música activada</span>
   </button>
 </nav>
-
-<div class="monedero-resumen" aria-live="polite">
-  <strong>Ganado: <span id="dineroGenerado">Cargando...</span></strong>
-  <span> · Disponible: <span id="saldoDisponible">Cargando...</span></span>
-  <small><span id="puntosGanados">Cargando puntos...</span> · 2 puntos = $1</small>
-</div>
 
 <div class="zona-juego">
   <div class="panel-inventario">
@@ -533,24 +538,16 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/db.js"></script>
 <script>
-  const dineroGeneradoEl = document.getElementById('dineroGenerado');
   const saldoDisponibleEl = document.getElementById('saldoDisponible');
-  const puntosGanadosEl = document.getElementById('puntosGanados');
-  const claveDineroGastado = 'minitienda_dinero_gastado';
-  const gastoGuardado = Number(localStorage.getItem(claveDineroGastado) || 0);
-  let puntosGanados = 0;
-  let dineroGenerado = 0;
-  let dineroGastado = Number.isFinite(gastoGuardado) ? Math.max(0, Math.floor(gastoGuardado)) : 0;
+  let monedero = null;
+  let inventario = [];
   let saldoDisponible = 0;
   let saldoCargado = false;
   let errorCargandoSaldo = false;
 
   function actualizarMonedero(){
-    dineroGenerado = Math.floor(puntosGanados / 2);
-    saldoDisponible = Math.max(0, dineroGenerado - dineroGastado);
-    dineroGeneradoEl.textContent = '$' + dineroGenerado;
-    saldoDisponibleEl.textContent = '$' + saldoDisponible;
-    puntosGanadosEl.textContent = puntosGanados + ' puntos';
+    saldoDisponible = monedero ? monedero.saldo : 0;
+    saldoDisponibleEl.textContent = saldoCargado ? '$' + saldoDisponible : 'Cargando...';
     const modalDisponible = document.getElementById('modalDisponible');
     if(modalDisponible){
       modalDisponible.textContent = saldoCargado ? '$' + saldoDisponible : 'No disponible';
@@ -568,27 +565,15 @@
   async function cargarMonedero(){
     try{
       if(!window.DB) throw new Error('No se pudo iniciar la conexión con el progreso del jugador.');
-      const jugador = await DB.asegurarSesion();
-      const progreso = await DB.obtenerProgreso();
-      const puntosEnProgreso = Object.values(progreso).reduce((total, modulo) => {
-        const puntos = Number(modulo.puntos);
-        return total + (Number.isFinite(puntos) ? Math.max(0, puntos) : 0);
-      }, 0);
-      const clavePuntosMaximos = `minitienda_puntos_maximos_${jugador.id}`;
-      const puntosGuardados = Number(localStorage.getItem(clavePuntosMaximos) || 0);
-      puntosGanados = Math.max(
-        puntosEnProgreso,
-        Number.isFinite(puntosGuardados) ? Math.max(0, puntosGuardados) : 0
-      );
-      localStorage.setItem(clavePuntosMaximos, String(puntosGanados));
+      monedero = await DB.obtenerMonederoTienda();
+      inventario = monedero.inventario;
       saldoCargado = true;
+      actualizarInventario();
       actualizarMonedero();
     }catch(error){
       errorCargandoSaldo = true;
       console.error('Error cargando el saldo de la tiendita:', error);
-      dineroGeneradoEl.textContent = 'No disponible';
       saldoDisponibleEl.textContent = 'No disponible';
-      puntosGanadosEl.textContent = 'No se pudo cargar el progreso';
       const modalDisponible = document.getElementById('modalDisponible');
       if(modalDisponible) modalDisponible.textContent = 'No disponible';
       actualizarDisponibilidadCompra();
@@ -714,7 +699,6 @@
 
   // ---------- inventario de cosas ya compradas ----------
   const listaInventarioEl = document.getElementById('listaInventario');
-  const inventario = [];
 
   function actualizarInventario(){
     if(inventario.length === 0){
@@ -976,7 +960,7 @@
 
   document.getElementById('btnCerrarModal').addEventListener('click', cerrarModal);
 
-  botonPagar.addEventListener('click', ()=>{
+  botonPagar.addEventListener('click', async ()=>{
     if(!productoActivo) return;
     if(!saldoCargado){
       mostrarMensajeModal('No se pudo cargar tu saldo; por ahora no puedes comprar.', 'falta');
@@ -990,13 +974,27 @@
       return;
     }
     if(total === precio){
-      const gastoActualizado = dineroGastado + precio;
-      localStorage.setItem(claveDineroGastado, String(gastoActualizado));
-      dineroGastado = gastoActualizado;
+      let compra;
+      try{
+        compra = await DB.comprarProductoTienda(
+          { nombre: productoActivo.nombre, icono: productoActivo.icono },
+          precio
+        );
+      }catch(error){
+        console.error('Error guardando la compra:', error);
+        mostrarMensajeModal('No se pudo guardar la compra. Inténtalo de nuevo.', 'falta');
+        return;
+      }
+      monedero = compra.monedero;
+      inventario = monedero.inventario;
+      if(!compra.comprado){
+        actualizarMonedero();
+        mostrarMensajeModal(`No tienes suficiente dinero. Te faltan $${precio-saldoDisponible}.`, 'falta');
+        return;
+      }
+      actualizarInventario();
       actualizarMonedero();
       mostrarMensajeModal(`¡Compraste ${productoActivo.nombre}!`, 'correcto');
-      inventario.push({ nombre: productoActivo.nombre, icono: productoActivo.icono });
-      actualizarInventario();
       const elAnaquel = anaquelEls[productoActivo.id];
       elAnaquel.classList.add('comprado');
       const idComprado = productoActivo.id;
