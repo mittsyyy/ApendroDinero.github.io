@@ -76,6 +76,8 @@ async function actualizarRacha() {
 
 // ── Progreso de módulos ──────────────
 // Devuelve un objeto: { 1: {progreso, completado, puntos, estrellas}, 2: {...} }
+let avanceModuloPendiente = Promise.resolve();
+
 async function obtenerProgreso() {
   const user = await asegurarSesion();
   const { data, error } = await sb
@@ -149,7 +151,7 @@ async function respuesta(moduloId, actividad, correcto, tiempoSeg) {
 // errores = equivocaciones acumuladas (define las estrellas: 0-2 → 3, 3-5 → 2, más → 1)
 // Ejemplo: DB.avanceModulo(1, 6, 10, 2);
 async function avanceModulo(moduloId, correctas, total, errores = 0) {
-  try {
+  const guardar = async () => {
     const terminado = correctas >= total;
     const estrellas = !terminado ? 0 : errores <= 2 ? 3 : errores <= 5 ? 2 : 1;
     await guardarProgreso(moduloId, {
@@ -157,7 +159,11 @@ async function avanceModulo(moduloId, correctas, total, errores = 0) {
       puntos: correctas * 10,
       estrellas
     });
-  } catch (e) { console.error('Supabase (progreso):', e); }
+  };
+  avanceModuloPendiente = avanceModuloPendiente.then(guardar, guardar).catch(e => {
+    console.error('Supabase (progreso):', e);
+  });
+  return avanceModuloPendiente;
 }
 
 // Todo junto en un solo objeto para usarlo desde cualquier página

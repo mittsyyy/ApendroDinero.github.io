@@ -74,11 +74,9 @@
   .tienda-nav-button:active{ transform:translateY(2px); box-shadow:0 2px 0 rgba(2,62,138,.28); }
 
   .monedero-resumen{
-    position:fixed;
-    top:62px;
-    left:50%;
-    transform:translateX(-50%);
-    z-index:41;
+    position:relative;
+    flex:0 0 auto;
+    margin-top:48px;
     padding:7px 14px;
     border:2px solid var(--morado-oscuro);
     border-radius:14px;
@@ -452,7 +450,7 @@
 
   @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
   @media (max-width:620px){
-    .monedero-resumen{ top:58px; padding:5px 9px; font-size:.7rem; }
+    .monedero-resumen{ margin-top:48px; padding:5px 9px; font-size:.7rem; }
     .monedero-resumen small{ font-size:.62rem; }
   }
 </style>
@@ -570,11 +568,19 @@
   async function cargarMonedero(){
     try{
       if(!window.DB) throw new Error('No se pudo iniciar la conexión con el progreso del jugador.');
+      const jugador = await DB.asegurarSesion();
       const progreso = await DB.obtenerProgreso();
-      puntosGanados = Object.values(progreso).reduce((total, modulo) => {
+      const puntosEnProgreso = Object.values(progreso).reduce((total, modulo) => {
         const puntos = Number(modulo.puntos);
         return total + (Number.isFinite(puntos) ? Math.max(0, puntos) : 0);
       }, 0);
+      const clavePuntosMaximos = `minitienda_puntos_maximos_${jugador.id}`;
+      const puntosGuardados = Number(localStorage.getItem(clavePuntosMaximos) || 0);
+      puntosGanados = Math.max(
+        puntosEnProgreso,
+        Number.isFinite(puntosGuardados) ? Math.max(0, puntosGuardados) : 0
+      );
+      localStorage.setItem(clavePuntosMaximos, String(puntosGanados));
       saldoCargado = true;
       actualizarMonedero();
     }catch(error){
