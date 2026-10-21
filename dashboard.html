@@ -6,6 +6,7 @@
   <title>Aprendo a Reconocer el Dinero — Dashboard</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.1.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/db.js"></script>
   <script src="js/dashboard-db.js"></script>
@@ -408,8 +409,9 @@
       <div class="topbar-sub">Ciclo escolar 2024–25 &nbsp;·&nbsp; 5 alumnos activos</div>
     </div>
     <div class="topbar-right">
-      <button class="topbar-btn"><span class="emoji-icon"><i class="fa-solid fa-download" aria-hidden="true"></i></span> Exportar</button>
-      <button class="topbar-btn topbar-btn-primary"><span class="emoji-icon"><i class="fa-solid fa-user-plus" aria-hidden="true"></i></span> Nuevo alumno</button>
+      <button class="topbar-btn" onclick="exportarDatos()">
+        <span class="emoji-icon"><i class="fa-solid fa-download" aria-hidden="true"></i></span> Exportar
+      </button>
     </div>
   </header>
 
@@ -580,10 +582,10 @@
           <div style="padding:14px 0;border-bottom:1px solid var(--border);">
             <div style="font-weight:600;margin-bottom:8px;">Exportar</div>
             <button onclick="exportarDatos()" style="background:var(--sb-bg);color:white;border:none;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
-              <span class="emoji-icon"><i class="fa-solid fa-download" aria-hidden="true"></i></span> Descargar JSON
+              <span class="emoji-icon"><i class="fa-solid fa-file-pdf" aria-hidden="true"></i></span> Descargar PDF
             </button>
             <div style="font-size:11px;color:var(--text-hint);margin-top:6px;">
-              Descarga una copia del progreso de todos los alumnos.
+              Descarga un reporte PDF con el nombre, puntos y progreso de todos los alumnos.
             </div>
           </div>
 
@@ -1168,16 +1170,56 @@ function resetearDatos() {
 }
 
 function exportarDatos() {
-  const data = JSON.stringify(window.__dashData || {}, null, 2);
-  const blob = new Blob([data], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `apdinero_export_${new Date().toISOString().slice(0,10)}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  const jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+  if (!jsPDFCtor) {
+    alert('No se pudo cargar la librería para exportar PDF.');
+    return;
+  }
+
+  const snapshot = window.__dashData || { hayDatos: false, jugadores: [], modulos: [], actividad: [] };
+  const alumnos = Array.isArray(snapshot.jugadores) ? snapshot.jugadores : [];
+
+  const doc = new jsPDFCtor({ unit: 'pt', format: 'a4' });
+  let y = 52;
+
+  doc.setFontSize(18);
+  doc.text('Reporte de alumnos', 40, 32);
+  doc.setFontSize(10);
+  doc.text(`Generado: ${new Date().toLocaleString()}`, 40, 48);
+
+  if (!alumnos.length) {
+    doc.setFontSize(12);
+    doc.text('No hay alumnos registrados para exportar.', 40, y);
+    doc.save(`reporte_alumnos_${new Date().toISOString().slice(0,10)}.pdf`);
+    return;
+  }
+
+  doc.setFontSize(11);
+  doc.text('Nombre', 40, y);
+  doc.text('Puntos', 220, y);
+  doc.text('Módulos', 290, y);
+  doc.text('Racha', 360, y);
+  doc.line(36, y + 4, 560, y + 4);
+  y += 18;
+
+  alumnos.forEach((alumno, index) => {
+    const completados = (alumno.progreso || []).filter(p => p.comp === 1).length;
+    const linea = `${index + 1}. ${alumno.nombre || 'Sin nombre'}`;
+
+    if (y > 710) {
+      doc.addPage();
+      y = 52;
+    }
+
+    doc.setFontSize(10);
+    doc.text(linea, 40, y, { maxWidth: 150 });
+    doc.text(String(alumno.puntos || 0), 220, y);
+    doc.text(`${completados}/5`, 290, y);
+    doc.text(String(alumno.racha || 0), 360, y);
+    y += 16;
+  });
+
+  doc.save(`reporte_alumnos_${new Date().toISOString().slice(0,10)}.pdf`);
 }
 </script>
 </script>
