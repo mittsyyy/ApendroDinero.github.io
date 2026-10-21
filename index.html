@@ -202,8 +202,8 @@
     <label for="nombre">Nombre del alumno</label>
     <input type="text" id="nombre" placeholder="Escribe tu nombre" autocomplete="off">
 
-    <label for="edad">Edad</label>
-    <input type="number" id="edad" min="3" max="50" placeholder="¿Cuántos años tienes?">
+    <label for="pin-alumno">PIN (4 a 8 números)</label>
+    <input type="password" id="pin-alumno" inputmode="numeric" pattern="[0-9]*" minlength="4" maxlength="8" placeholder="Escribe tu PIN" autocomplete="current-password">
   </div>
 
   <!-- Formulario Profesor -->
@@ -213,15 +213,26 @@
 
     <label for="password-profe">Contraseña</label>
     <input type="password" id="password-profe" placeholder="••••••••" autocomplete="off">
+
+    <div id="registro-alumno" style="display:none;">
+      <label for="nombre-nuevo-alumno">Nombre del alumno</label>
+      <input type="text" id="nombre-nuevo-alumno" placeholder="Nombre del alumno" autocomplete="off">
+
+      <label for="pin-nuevo-alumno">PIN (4 a 8 números)</label>
+      <input type="password" id="pin-nuevo-alumno" inputmode="numeric" pattern="[0-9]*" minlength="4" maxlength="8" placeholder="Asigna un PIN" autocomplete="new-password">
+    </div>
   </div>
 
-  <button type="button" class="btn-primary" onclick="guardarNombre()">
-    <i class="fa-solid fa-play" aria-hidden="true"></i> Empezar
+  <button type="button" class="btn-primary" id="btn-principal" onclick="guardarNombre()">
+    <i class="fa-solid fa-play" aria-hidden="true"></i> Entrar como alumno
+  </button>
+  <button type="button" class="btn-primary" id="btn-registrar-alumno" style="display:none;" onclick="registrarAlumno()">
+    <i class="fa-solid fa-user-plus" aria-hidden="true"></i> Registrar alumno
   </button>
 
   <div class="error-msg" id="error-msg"></div>
 
-  <p class="hint" id="hint-text">Modo alumno: tu progreso se guarda en este navegador.</p>
+  <p class="hint" id="hint-text">Escribe tu nombre y el PIN que te asignó tu profesor.</p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

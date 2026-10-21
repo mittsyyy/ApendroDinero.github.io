@@ -116,8 +116,17 @@ function startModule() {
   window.location.href = `modulos/modulo${moduloActual}.html`;
 }
 
-function cerrarSesion() {
+async function cerrarSesion() {
+  try {
+    const { error } = await sb.auth.signOut();
+    if (error) throw error;
+  } catch (error) {
+    console.error('No se pudo cerrar la sesión:', error);
+    showToast('No se pudo cerrar la sesión. Inténtalo de nuevo.');
+    return;
+  }
   localStorage.removeItem('rolSesion');
+  localStorage.removeItem('nombreJugador');
   window.location.replace('index.html');
 }
 

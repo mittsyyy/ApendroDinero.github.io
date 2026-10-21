@@ -6,13 +6,20 @@ function setRol(rol) {
     rolActual = rol;
     const esAlumno = rol === 'alumno';
 
+    document.getElementById('registro-alumno').style.display = 'none';
+    document.getElementById('btn-principal').style.display = 'block';
+    document.getElementById('btn-registrar-alumno').style.display = esAlumno ? 'none' : 'block';
+    document.getElementById('registro-alumno').style.display = esAlumno ? 'none' : 'block';
+    document.getElementById('btn-principal').innerHTML = esAlumno
+        ? '<i class="fa-solid fa-play" aria-hidden="true"></i> Entrar como alumno'
+        : '<i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i> Entrar como profesor';
     document.getElementById('tab-alumno').classList.toggle('active', esAlumno);
     document.getElementById('tab-profe').classList.toggle('active', !esAlumno);
     document.getElementById('form-alumno').style.display = esAlumno ? 'block' : 'none';
     document.getElementById('form-profesor').style.display = esAlumno ? 'none' : 'block';
     document.getElementById('hint-text').textContent = esAlumno
-        ? 'Modo alumno: tu progreso se guarda en este navegador.'
-        : 'Modo profesor: ingresa con tu correo y contraseña.';
+        ? 'Escribe tu nombre y el PIN que te asignó tu profesor.'
+        : 'Modo profesor: inicia sesión para entrar o registrar alumnos.';
     mostrarError('');
 }
 
@@ -29,42 +36,28 @@ async function guardarNombre() {
     }
 
     const nombre = document.getElementById('nombre').value.trim();
-    const edad = parseInt(document.getElementById('edad').value, 10);
+    const pin = document.getElementById('pin-alumno').value.trim();
 
     if (nombre === '') {
         mostrarError('Escribe tu nombre primero');
         return;
     }
-    if (!edad || edad < 3 || edad > 50) {
-        mostrarError('Escribe una edad entre 3 y 50');
+    if (!/^\d{4,8}$/.test(pin)) {
+        mostrarError('El PIN debe tener de 4 a 8 números');
         return;
     }
     mostrarError('');
 
-    // Respaldo local y sesión (esto es lo que lee casa.html)
-    localStorage.setItem('rolSesion', 'alumno');
-    localStorage.setItem('nombreJugador', nombre);
-
-    // Guardar en Supabase (sin bloquear el juego)
     try {
         if (!window.DB) throw new Error('DB no está cargado (revisa db.js y la librería de Supabase)');
-
-        // Si en este navegador quedó abierta una sesión de profesor, la cerramos
-        // para que el alumno no se registre con la cuenta de la maestra
-        const { data: { session } } = await sb.auth.getSession();
-        if (session && !session.user.is_anonymous) {
-            await sb.auth.signOut();
-        }
-
-        await Promise.race([
-            DB.registrarJugador(nombre, edad),
-            new Promise((_, rechazar) => setTimeout(() => rechazar(new Error('Tiempo agotado')), 5000))
-        ]);
+        const sesion = await DB.iniciarSesionAlumno(nombre, pin);
+        localStorage.setItem('rolSesion', 'alumno');
+        localStorage.setItem('nombreJugador', sesion.name);
+        window.location.href = 'casa.html';
     } catch (e) {
-        console.error('No se pudo guardar en Supabase:', e);
+        console.error('No se pudo iniciar sesión del alumno:', e);
+        mostrarError(e.message || 'No se pudo iniciar sesión. Revisa el nombre y el PIN.');
     }
-
-    window.location.href = 'casa.html';
 }
 
 async function entrarProfesor() {
@@ -98,6 +91,41 @@ async function entrarProfesor() {
     } catch (e) {
         console.error('Login profesor:', e);
         mostrarError('Correo o contraseña incorrectos');
+    }
+}
+
+async function registrarAlumno() {
+    const correo = document.getElementById('nombre-profe').value.trim();
+    const pass = document.getElementById('password-profe').value;
+    const nombre = document.getElementById('nombre-nuevo-alumno').value.trim();
+    const pin = document.getElementById('pin-nuevo-alumno').value.trim();
+
+    if (!correo || !pass) {
+        mostrarError('Escribe el correo y la contraseña del profesor');
+        return;
+    }
+    if (!nombre) {
+        mostrarError('Escribe el nombre del alumno');
+        return;
+    }
+    if (!/^\d{4,8}$/.test(pin)) {
+        mostrarError('El PIN debe tener de 4 a 8 números');
+        return;
+    }
+
+    try {
+        mostrarError('');
+        const { error } = await sb.auth.signInWithPassword({ email: correo, password: pass });
+        if (error) throw error;
+        const resultado = await DB.registrarAlumnoConPin(nombre, pin);
+        mostrarError('');
+        document.getElementById('nombre-nuevo-alumno').value = '';
+        document.getElementById('pin-nuevo-alumno').value = '';
+        document.getElementById('hint-text').textContent =
+            `${resultado.name} ya puede entrar con su nombre y PIN.`;
+    } catch (e) {
+        console.error('No se pudo registrar al alumno:', e);
+        mostrarError(e.message || 'No se pudo registrar al alumno.');
     }
 }
 

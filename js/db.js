@@ -25,6 +25,41 @@ async function asegurarSesion() {
   return data.user;
 }
 
+async function llamarFuncionAccesoAlumno(body) {
+  const { data, error } = await sb.functions.invoke('student-access', { body });
+  if (error) {
+    let message = error.message || 'No se pudo conectar con el acceso de alumnos.';
+    if (error.context && typeof error.context.json === 'function') {
+      try {
+        const details = await error.context.json();
+        if (details.error) message = details.error;
+      } catch (parseError) {
+        console.warn('No se pudo leer el error de student-access:', parseError);
+      }
+    }
+    throw new Error(message);
+  }
+  if (data?.error) throw new Error(data.error);
+  return data;
+}
+
+async function iniciarSesionAlumno(nombre, pin) {
+  await sb.auth.signOut();
+  const resultado = await llamarFuncionAccesoAlumno({ action: 'login', name: nombre, pin });
+  if (!resultado?.token_hash) throw new Error('El servicio no devolvió un acceso válido.');
+  const { data, error } = await sb.auth.verifyOtp({
+    token_hash: resultado.token_hash,
+    type: 'magiclink'
+  });
+  if (error) throw error;
+  if (!data.user) throw new Error('No se pudo iniciar la sesión del alumno.');
+  return { user: data.user, name: resultado.name };
+}
+
+async function registrarAlumnoConPin(nombre, pin) {
+  return llamarFuncionAccesoAlumno({ action: 'register', name: nombre, pin });
+}
+
 // ── Jugador ──────────────────────────
 async function registrarJugador(nombre, edad) {
   const user = await asegurarSesion();
@@ -112,39 +147,112 @@ async function guardarProgreso(moduloId, { progreso = 0, puntos = 0, estrellas =
 const CLAVE_MONEDERO_TIENDA = 'minitienda_monedero_';
 const RECOMPENSA_MODULO_TIENDA = 5;
 
-function guardarMonederoTienda(jugadorId, monedero) {
+function validarMonederoTienda(monedero) {
+  if (!monedero || !Number.isInteger(monedero.saldo) || monedero.saldo < 0 || !Array.isArray(monedero.inventario)) {
+    throw new Error('Los datos guardados del monedero no son válidos.');
+  }
+  return {
+    saldo: monedero.saldo,
+    inventario: monedero.inventario.filter(item =>
+      item && typeof item.nombre === 'string' && typeof item.icono === 'string'
+    )
+  };
+}
+
+async function asegurarJugadorParaMonedero() {
+  const user = await asegurarSesion();
+  const jugador = await obtenerJugador();
+  if (jugador) return user;
+
+  const nombre = (localStorage.getItem('nombreJugador') || '').trim();
+  if (!nombre) {
+    throw new Error('No hay un alumno registrado para esta sesión. Regresa a la casa e inicia sesión.');
+  }
+  await registrarJugador(nombre, null);
+  if (!(await obtenerJugador())) {
+    throw new Error('No se pudo registrar al alumno para crear su monedero.');
+  }
+  return user;
+}
+
+function guardarCopiaLocalMonederoTienda(jugadorId, monedero) {
   localStorage.setItem(CLAVE_MONEDERO_TIENDA + jugadorId, JSON.stringify(monedero));
 }
 
-async function obtenerMonederoTienda() {
-  const user = await asegurarSesion();
-  const clave = CLAVE_MONEDERO_TIENDA + user.id;
-  const guardado = localStorage.getItem(clave);
-  if (guardado !== null) {
-    const monedero = JSON.parse(guardado);
-    if (!Number.isFinite(monedero.saldo) || monedero.saldo < 0 || !Array.isArray(monedero.inventario)) {
-      throw new Error('Los datos guardados del monedero no son válidos.');
-    }
-    return monedero;
+async function leerMonederoTienda(jugadorId) {
+  const { data, error } = await sb
+    .from('monedero_tienda')
+    .select('saldo, inventario')
+    .eq('jugador_id', jugadorId)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? validarMonederoTienda(data) : null;
+}
+
+async function inicializarMonederoTienda(jugadorId) {
+  const claveLocal = CLAVE_MONEDERO_TIENDA + jugadorId;
+  const guardadoLocal = localStorage.getItem(claveLocal);
+  let inicial;
+
+  if (guardadoLocal !== null) {
+    inicial = validarMonederoTienda(JSON.parse(guardadoLocal));
+  } else {
+    const progreso = await obtenerProgreso();
+    const puntosGuardadosLocal = localStorage.getItem(`minitienda_puntos_maximos_${jugadorId}`);
+    const puntosEnProgreso = Object.values(progreso).reduce((total, modulo) => {
+      const puntos = Number(modulo.puntos);
+      return total + (Number.isFinite(puntos) ? Math.max(0, puntos) : 0);
+    }, 0);
+    const puntosAnteriores = Number(puntosGuardadosLocal || 0);
+    const puntosHistoricos = Math.max(
+      puntosEnProgreso,
+      Number.isFinite(puntosAnteriores) ? Math.max(0, puntosAnteriores) : 0
+    );
+    const dineroGastadoAnterior = Number(localStorage.getItem('minitienda_dinero_gastado') || 0);
+    const descuentoAnterior = puntosGuardadosLocal !== null && Number.isFinite(dineroGastadoAnterior)
+      ? Math.max(0, dineroGastadoAnterior)
+      : 0;
+
+    inicial = {
+      saldo: Math.max(0, Math.floor(puntosHistoricos / 2) - descuentoAnterior),
+      inventario: []
+    };
   }
 
-  const progreso = await obtenerProgreso();
-  const puntosEnProgreso = Object.values(progreso).reduce((total, modulo) => {
-    const puntos = Number(modulo.puntos);
-    return total + (Number.isFinite(puntos) ? Math.max(0, puntos) : 0);
-  }, 0);
-  const puntosAnteriores = Number(localStorage.getItem(`minitienda_puntos_maximos_${user.id}`) || 0);
-  const puntosHistoricos = Math.max(
-    puntosEnProgreso,
-    Number.isFinite(puntosAnteriores) ? Math.max(0, puntosAnteriores) : 0
-  );
-  const dineroGastadoAnterior = Number(localStorage.getItem('minitienda_dinero_gastado') || 0);
-  const monedero = {
-    saldo: Math.max(0, Math.floor(puntosHistoricos / 2) -
-      (Number.isFinite(dineroGastadoAnterior) ? Math.max(0, dineroGastadoAnterior) : 0)),
-    inventario: []
-  };
-  guardarMonederoTienda(user.id, monedero);
+  const { error } = await sb
+    .from('monedero_tienda')
+    .insert({
+      jugador_id: jugadorId,
+      saldo: inicial.saldo,
+      inventario: inicial.inventario
+    });
+  if (error && error.code !== '23505') throw error;
+
+  const existente = await leerMonederoTienda(jugadorId);
+  if (!existente) throw new Error('No se pudo inicializar el monedero del jugador.');
+  guardarCopiaLocalMonederoTienda(jugadorId, existente);
+  return existente;
+}
+
+async function actualizarMonederoTienda(jugadorId, monedero) {
+  const valido = validarMonederoTienda(monedero);
+  const { data, error } = await sb
+    .from('monedero_tienda')
+    .update({ saldo: valido.saldo, inventario: valido.inventario })
+    .eq('jugador_id', jugadorId)
+    .select('saldo, inventario')
+    .single();
+  if (error) throw error;
+  const actualizado = validarMonederoTienda(data);
+  guardarCopiaLocalMonederoTienda(jugadorId, actualizado);
+  return actualizado;
+}
+
+async function obtenerMonederoTienda() {
+  const user = await asegurarJugadorParaMonedero();
+  const existente = await leerMonederoTienda(user.id);
+  const monedero = existente || await inicializarMonederoTienda(user.id);
+  guardarCopiaLocalMonederoTienda(user.id, monedero);
   return monedero;
 }
 
@@ -152,7 +260,7 @@ async function acreditarModuloCompletado() {
   const user = await asegurarSesion();
   const monedero = await obtenerMonederoTienda();
   monedero.saldo += RECOMPENSA_MODULO_TIENDA;
-  guardarMonederoTienda(user.id, monedero);
+  await actualizarMonederoTienda(user.id, monedero);
 }
 
 async function comprarProductoTienda(producto, precio) {
@@ -164,8 +272,8 @@ async function comprarProductoTienda(producto, precio) {
   if (monedero.saldo < precio) return { comprado: false, monedero };
   monedero.saldo -= precio;
   monedero.inventario.push({ nombre: producto.nombre, icono: producto.icono });
-  guardarMonederoTienda(user.id, monedero);
-  return { comprado: true, monedero };
+  const actualizado = await actualizarMonederoTienda(user.id, monedero);
+  return { comprado: true, monedero: actualizado };
 }
 
 // ── Intentos (cada respuesta) ────────
@@ -229,7 +337,8 @@ async function avanceModulo(moduloId, correctas, total, errores = 0) {
 
 // Todo junto en un solo objeto para usarlo desde cualquier página
 window.DB = {
-  asegurarSesion, registrarJugador, obtenerJugador, actualizarNombre,
+  asegurarSesion, iniciarSesionAlumno, registrarAlumnoConPin,
+  registrarJugador, obtenerJugador, actualizarNombre,
   guardarAjustes, actualizarRacha, obtenerProgreso, guardarProgreso,
   obtenerMonederoTienda, comprarProductoTienda,
   registrarIntento, obtenerResumen, respuesta, avanceModulo
